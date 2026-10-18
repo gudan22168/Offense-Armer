@@ -17,5 +17,6 @@
   "message.offense_armer.depleted": "Nitrogen depleted. Armor deactivated.",
   "message.offense_armer.armor_blocked": "The nitrogen armor stripped your armor.",
   "message.offense_armer.not_developed": "Your ability has not awakened yet.",
-  "message.offense_armer.no_nitrogen": "Not enough nitrogen."
+  "message.offense_armer.no_nitrogen": "Not enough nitrogen.",
+  "message.offense_armer.overloaded": "Overloaded, recovering nitrogen..."
 }

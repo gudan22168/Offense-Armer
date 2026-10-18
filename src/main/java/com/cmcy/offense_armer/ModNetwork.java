@@ -104,8 +104,9 @@ public class ModNetwork {
                             player.displayClientMessage(Component.translatable("message.offense_armer.not_developed"), true);
                             return;
                         }
-                        if (ability.getNitrogen() <= 0f) {
-                            player.displayClientMessage(Component.translatable("message.offense_armer.no_nitrogen"), true);
+                        float threshold = (float) (ability.getMaxNitrogen() * Config.reenableThreshold);
+                        if (ability.getNitrogen() < threshold) {
+                            player.displayClientMessage(Component.translatable("message.offense_armer.overloaded"), true);
                             return;
                         }
                         ability.setActive(true);

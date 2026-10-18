@@ -17,5 +17,6 @@
   "message.offense_armer.depleted": "氮气耗尽，装甲已解除。",
   "message.offense_armer.armor_blocked": "氮气装甲已将你的护甲脱下。",
   "message.offense_armer.not_developed": "你的能力尚未觉醒。",
-  "message.offense_armer.no_nitrogen": "氮气不足。"
+  "message.offense_armer.no_nitrogen": "氮气不足。",
+  "message.offense_armer.overloaded": "你已过载，正在恢复氮气…"
 }

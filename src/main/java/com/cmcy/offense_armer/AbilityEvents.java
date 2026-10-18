@@ -101,6 +101,13 @@ public class AbilityEvents {
                 player.fallDistance = 0f;
             }
 
+            // Lv3+ 暗中恢复：未开启时也慢慢回氮
+            double regen = Config.regenForLevel(ability.getLevel());
+            if (regen > 0.0 && ability.getNitrogen() < ability.getMaxNitrogen()) {
+                ability.addNitrogen((float) regen);
+                changed = true;
+            }
+
             // 兼容 Mekanism 氮气获取：未开启时从附近储罐/容器补充氮气
             if (ability.getNitrogen() < ability.getMaxNitrogen() && player.tickCount % 10 == 0) {
                 long drained = MekanismCompat.drainNitrogen(player);

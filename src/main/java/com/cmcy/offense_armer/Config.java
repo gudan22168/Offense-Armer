@@ -108,6 +108,10 @@ public class Config {
             .comment("爆冲/下砸命中实体时的额外伤害。")
             .defineInRange("impactDamage", 6.0, 0.0, 1000.0);
 
+    public static final ModConfigSpec.DoubleValue REENABLE_THRESHOLD = BUILDER
+            .comment("耗尽过载后，氮气恢复到该比例（占上限）才允许重新开启能力。")
+            .defineInRange("reenableThreshold", 0.2, 0.0, 1.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     public static double maxNitrogen;
@@ -129,6 +133,7 @@ public class Config {
     public static double damageNitrogenCost;
     public static boolean burstDropItems;
     public static double impactDamage;
+    public static double reenableThreshold;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -157,6 +162,7 @@ public class Config {
         damageNitrogenCost = DAMAGE_NITROGEN_COST.get();
         burstDropItems = BURST_DROP_ITEMS.get();
         impactDamage = IMPACT_DAMAGE.get();
+        reenableThreshold = REENABLE_THRESHOLD.get();
         NitrogenCompat.reload();
     }
 
