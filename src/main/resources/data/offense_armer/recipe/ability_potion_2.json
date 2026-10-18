@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "offense_armer:ability_potion_1" },
+    { "item": "minecraft:glowstone_dust" }
+  ],
+  "result": {
+    "id": "offense_armer:ability_potion_2",
+    "count": 1
+  }
+}

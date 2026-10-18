@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "offense_armer:ability_potion_4" },
+    { "item": "minecraft:nether_star" }
+  ],
+  "result": {
+    "id": "offense_armer:ability_potion_5",
+    "count": 1
+  }
+}

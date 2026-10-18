@@ -1,0 +1,21 @@
+{
+  "itemGroup.offense_armer": "氮气装甲",
+  "item.offense_armer.liquid_nitrogen_bottle": "液氮瓶",
+  "item.offense_armer.ability_potion_1": "能力开发药 I",
+  "item.offense_armer.ability_potion_2": "能力开发药 II",
+  "item.offense_armer.ability_potion_3": "能力开发药 III",
+  "item.offense_armer.ability_potion_4": "能力开发药 IV",
+  "item.offense_armer.ability_potion_5": "能力开发药 V",
+  "key.offense_armer.toggle_ability": "切换氮气装甲",
+  "key.offense_armer.burst": "氮气爆冲",
+  "key.categories.offense_armer": "氮气装甲",
+  "message.offense_armer.level_up": "能力觉醒：等级 %s",
+  "message.offense_armer.already_developed": "你已达到这个阶段。",
+  "message.offense_armer.too_early": "你的能力还未开发到这一步。",
+  "message.offense_armer.full": "氮气储量已满。",
+  "message.offense_armer.refilled": "氮气已补充。",
+  "message.offense_armer.depleted": "氮气耗尽，装甲已解除。",
+  "message.offense_armer.armor_blocked": "氮气装甲已将你的护甲脱下。",
+  "message.offense_armer.not_developed": "你的能力尚未觉醒。",
+  "message.offense_armer.no_nitrogen": "氮气不足。"
+}

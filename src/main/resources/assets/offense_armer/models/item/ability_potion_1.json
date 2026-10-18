@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "offense_armer:item/ability_potion_1"
+  }
+}

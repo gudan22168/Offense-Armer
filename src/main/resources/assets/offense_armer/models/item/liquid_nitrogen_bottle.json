@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "offense_armer:item/liquid_nitrogen_bottle"
+  }
+}

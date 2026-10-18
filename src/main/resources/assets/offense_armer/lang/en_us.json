@@ -1,0 +1,21 @@
+{
+  "itemGroup.offense_armer": "Offense Armer",
+  "item.offense_armer.liquid_nitrogen_bottle": "Liquid Nitrogen Bottle",
+  "item.offense_armer.ability_potion_1": "Ability Developer Potion I",
+  "item.offense_armer.ability_potion_2": "Ability Developer Potion II",
+  "item.offense_armer.ability_potion_3": "Ability Developer Potion III",
+  "item.offense_armer.ability_potion_4": "Ability Developer Potion IV",
+  "item.offense_armer.ability_potion_5": "Ability Developer Potion V",
+  "key.offense_armer.toggle_ability": "Toggle Nitrogen Armor",
+  "key.offense_armer.burst": "Nitrogen Burst",
+  "key.categories.offense_armer": "Offense Armer",
+  "message.offense_armer.level_up": "Ability awakened: Level %s",
+  "message.offense_armer.already_developed": "You have already reached this stage.",
+  "message.offense_armer.too_early": "Your ability has not developed enough for this.",
+  "message.offense_armer.full": "Nitrogen storage is already full.",
+  "message.offense_armer.refilled": "Nitrogen refilled.",
+  "message.offense_armer.depleted": "Nitrogen depleted. Armor deactivated.",
+  "message.offense_armer.armor_blocked": "The nitrogen armor stripped your armor.",
+  "message.offense_armer.not_developed": "Your ability has not awakened yet.",
+  "message.offense_armer.no_nitrogen": "Not enough nitrogen."
+}

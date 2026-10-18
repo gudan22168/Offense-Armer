@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "offense_armer:liquid_nitrogen_bottle" },
+    { "item": "minecraft:redstone" }
+  ],
+  "result": {
+    "id": "offense_armer:ability_potion_1",
+    "count": 1
+  }
+}

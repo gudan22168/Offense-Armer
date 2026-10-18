@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "offense_armer:ability_potion_3" },
+    { "item": "minecraft:ghast_tear" }
+  ],
+  "result": {
+    "id": "offense_armer:ability_potion_4",
+    "count": 1
+  }
+}
