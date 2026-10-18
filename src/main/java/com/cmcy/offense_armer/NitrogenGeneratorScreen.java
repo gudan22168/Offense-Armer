@@ -33,14 +33,14 @@ public class NitrogenGeneratorScreen extends AbstractContainerScreen<NitrogenGen
 
     @Override
     protected void renderBg(GuiGraphics g, float partialTick, int mouseX, int mouseY) {
-        g.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        g.blit(TEXTURE, leftPos, topPos, 0, 0f, 0f, imageWidth, imageHeight, imageWidth, imageHeight);
         renderBar(g, leftPos + 49, topPos + 22, menu.getEnergy(), BAR_ENERGY);
         renderBar(g, leftPos + 69, topPos + 22, menu.getAir(), BAR_AIR);
         renderBar(g, leftPos + 113, topPos + 22, menu.getNitrogen(), BAR_NITROGEN);
     }
 
     private void renderBar(GuiGraphics g, int x, int y, int value, ResourceLocation fill) {
-        g.blit(BAR_FRAME, x, y, 0, 0, BAR_W, BAR_H);
+        g.blit(BAR_FRAME, x, y, 0, 0f, 0f, BAR_W, BAR_H, BAR_W, BAR_H);
         int h = MAX > 0 ? (int) Math.round((double) BAR_H * value / MAX) : 0;
         if (h > 0) {
             h = Math.min(h, BAR_H);

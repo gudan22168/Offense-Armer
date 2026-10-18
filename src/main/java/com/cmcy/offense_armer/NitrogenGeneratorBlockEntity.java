@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,7 +31,7 @@ public class NitrogenGeneratorBlockEntity extends BlockEntity implements MenuPro
 
     private int energy = MAX_ENERGY;
     private int air = MAX_AIR;
-    private int nitrogen = MAX_NITROGEN;
+    private int nitrogen = 0;
 
     private final SimpleContainer inventory = new SimpleContainer(1);
 
@@ -103,6 +104,19 @@ public class NitrogenGeneratorBlockEntity extends BlockEntity implements MenuPro
         }
         if (level.getGameTime() % 10 != 0) {
             return;
+        }
+        // 生产：有碳分子筛才产氮，并消耗分子筛耐久
+        ItemStack sieve = be.inventory.getItem(0);
+        if (sieve.getItem() instanceof CarbonSieveItem && sieve.getDamageValue() < sieve.getMaxDamage()) {
+            if (be.nitrogen < MAX_NITROGEN) {
+                be.nitrogen = Math.min(MAX_NITROGEN, be.nitrogen + 50);
+                be.setChanged();
+            }
+            sieve.setDamageValue(sieve.getDamageValue() + 1);
+            if (sieve.getDamageValue() >= sieve.getMaxDamage()) {
+                be.inventory.setItem(0, ItemStack.EMPTY);
+            }
+            be.setChanged();
         }
         // 站在机器附近（右侧一格 / 前方）自动回氮
         AABB area = new AABB(pos).inflate(2.0);
