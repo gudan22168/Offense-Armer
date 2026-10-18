@@ -234,10 +234,6 @@ public class AbilityEvents {
         if (player.tickCount % 2 != 0) {
             return;
         }
-        // 静止时不显示马赫环
-        if (player.getDeltaMovement().lengthSqr() < 0.001) {
-            return;
-        }
         Vec3 pos = player.position();
         // 环面垂直于视线方向（前进方向），而非水平
         Vec3 look = player.getLookAngle().normalize();
