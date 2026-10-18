@@ -3,6 +3,7 @@ package com.cmcy.offense_armer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -90,6 +92,19 @@ public class NitrogenGeneratorBlock extends Block implements EntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return state.getValue(PART) == Part.RIGHT ? new NitrogenGeneratorBlockEntity(pos, state) : null;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!level.isClientSide()) {
+            BlockPos bePos = state.getValue(PART) == Part.RIGHT
+                    ? pos
+                    : pos.relative(state.getValue(FACING).getClockWise());
+            if (level.getBlockEntity(bePos) instanceof NitrogenGeneratorBlockEntity generator) {
+                player.openMenu(generator);
+            }
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
     @Nullable

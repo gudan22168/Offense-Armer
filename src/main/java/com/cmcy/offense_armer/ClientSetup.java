@@ -11,6 +11,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 @EventBusSubscriber(modid = Offense_armer.MODID, value = Dist.CLIENT)
 public class ClientSetup {
@@ -38,6 +39,11 @@ public class ClientSetup {
                 ResourceLocation.fromNamespaceAndPath(Offense_armer.MODID, "nitrogen_bar"),
                 NitrogenBarOverlay::render
         );
+    }
+
+    @SubscribeEvent
+    public static void registerMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(ModMenus.NITROGEN_GENERATOR.get(), NitrogenGeneratorScreen::new);
     }
 
     @SubscribeEvent
