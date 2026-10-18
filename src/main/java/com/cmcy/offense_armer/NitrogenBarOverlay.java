@@ -59,6 +59,9 @@ public class NitrogenBarOverlay {
         } else {
             g.blit(BG_TEXTURE, bx, by, 0, 0f, 0f, BAR_WIDTH, BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT);
             int fillW = (int) (BAR_WIDTH * frac);
+            if (fillW <= 0 && frac > 0f) {
+                fillW = 1; // 还有一点氮气时至少显示 1px，避免看起来像耗尽
+            }
             if (fillW > 0) {
                 // 氮气过低（<20%）时填充层变红提醒
                 if (frac < LOW_THRESHOLD) {

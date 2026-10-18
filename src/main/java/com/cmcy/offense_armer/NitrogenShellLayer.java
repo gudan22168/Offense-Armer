@@ -35,7 +35,7 @@ public class NitrogenShellLayer extends RenderLayer<AbstractClientPlayer, Player
 
         // 氮气外壳（呼吸流动效果：透明度 + 缩放随正弦波动）
         float flow = (Mth.sin(ageInTicks * 0.1f) + 1f) * 0.5f;
-        float shellScale = 1.10f + 0.025f * flow;
+        float shellScale = 1.06f + 0.01f * flow;
         int shellAlpha = 0x4E + (int) (0x30 * flow);
         poseStack.pushPose();
         poseStack.scale(shellScale, shellScale, shellScale);
