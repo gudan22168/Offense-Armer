@@ -104,6 +104,10 @@ public class Config {
             .comment("爆冲/下潜破坏方块时是否掉落物品（true 掉落，false 不掉）。")
             .define("burstDropItems", false);
 
+    public static final ModConfigSpec.DoubleValue IMPACT_DAMAGE = BUILDER
+            .comment("爆冲/下砸命中实体时的额外伤害。")
+            .defineInRange("impactDamage", 6.0, 0.0, 1000.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     public static double maxNitrogen;
@@ -124,6 +128,7 @@ public class Config {
     public static int mekanismDrainMb;
     public static double damageNitrogenCost;
     public static boolean burstDropItems;
+    public static double impactDamage;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -151,6 +156,7 @@ public class Config {
         mekanismDrainMb = MEKANISM_DRAIN_MB.get();
         damageNitrogenCost = DAMAGE_NITROGEN_COST.get();
         burstDropItems = BURST_DROP_ITEMS.get();
+        impactDamage = IMPACT_DAMAGE.get();
         NitrogenCompat.reload();
     }
 

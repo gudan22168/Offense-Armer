@@ -155,6 +155,9 @@ public class AbilityEvents {
                 }
             }
         }
+        if (player.tickCount % 10 == 0) {
+            damageNearby(player, Config.burstBreakRadius + 0.5, (float) Config.impactDamage);
+        }
     }
 
     /** 能力关闭或降级时收回飞行权限（非创造/旁观）。 */
@@ -192,30 +195,50 @@ public class AbilityEvents {
                 }
             }
         }
+        if (player.tickCount % 10 == 0) {
+            damageNearby(player, Config.burstBreakRadius + 0.5, (float) Config.impactDamage);
+        }
     }
 
-    /** Lv5 爆冲时的马赫环（冲击波粒子环）。 */
+    /** 对附近实体造成冲撞伤害（爆冲/下砸命中）。 */
+    private static void damageNearby(ServerPlayer player, double radius, float damage) {
+        AABB area = player.getBoundingBox().inflate(radius);
+        List<LivingEntity> targets = player.level().getEntitiesOfClass(LivingEntity.class, area,
+                e -> e != player && !(e instanceof Player));
+        for (LivingEntity target : targets) {
+            target.hurt(player.damageSources().playerAttack(player), damage);
+        }
+    }
+
+    /** Lv5 爆冲时的马赫环（明亮紧致的冲击波粒子环，END_ROD 更清晰）。 */
     private static void spawnMachRing(ServerPlayer player) {
         if (player.tickCount % 2 != 0) {
             return;
         }
         Vec3 pos = player.position();
-        for (int k = 0; k < 14; k++) {
-            double angle = k * (Math.PI * 2.0 / 14.0);
-            double x = pos.x + Math.cos(angle) * 0.7;
-            double z = pos.z + Math.sin(angle) * 0.7;
-            player.serverLevel().sendParticles(ParticleTypes.CLOUD, x, pos.y + 1.0, z, 1, 0.0, 0.0, 0.0, 0.02);
+        int n = 20;
+        for (int k = 0; k < n; k++) {
+            double angle = k * (Math.PI * 2.0 / n);
+            double cos = Math.cos(angle);
+            double sin = Math.sin(angle);
+            player.serverLevel().sendParticles(ParticleTypes.END_ROD, pos.x + cos * 0.6, pos.y + 1.0, pos.z + sin * 0.6, 1, 0.0, 0.0, 0.0, 0.0);
+            player.serverLevel().sendParticles(ParticleTypes.CLOUD, pos.x + cos * 0.45, pos.y + 1.0, pos.z + sin * 0.45, 1, 0.0, 0.0, 0.0, 0.01);
         }
     }
 
-    /** Lv3 起，移动时留下白色氮气尾迹（残影初版，后续升级为幽灵模型残影）。 */
+    /** Lv3 起，移动时留下白色氮气气流尾迹（沿移动反方向喷出气雾）。 */
     private static void spawnTrail(ServerPlayer player) {
-        if (player.getDeltaMovement().lengthSqr() < 0.02) {
+        Vec3 vel = player.getDeltaMovement();
+        if (vel.lengthSqr() < 0.02) {
             return;
         }
         Vec3 pos = player.position();
-        player.serverLevel().sendParticles(ParticleTypes.SNOWFLAKE, pos.x, pos.y + 0.9, pos.z, 1, 0.25, 0.25, 0.25, 0.0);
-        player.serverLevel().sendParticles(ParticleTypes.CLOUD, pos.x, pos.y + 0.2, pos.z, 1, 0.3, 0.3, 0.3, 0.01);
+        Vec3 back = vel.normalize().scale(-0.4);
+        double bx = pos.x + back.x;
+        double by = pos.y + 1.0 + back.y;
+        double bz = pos.z + back.z;
+        player.serverLevel().sendParticles(ParticleTypes.CLOUD, bx, by, bz, 3, 0.28, 0.35, 0.28, 0.04);
+        player.serverLevel().sendParticles(ParticleTypes.SNOWFLAKE, bx, by, bz, 2, 0.28, 0.35, 0.28, 0.02);
     }
 
     /** Lv5 低温领域：冻结附近的水、减速并冰冻生物。 */

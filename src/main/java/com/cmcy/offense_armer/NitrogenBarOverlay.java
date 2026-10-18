@@ -27,7 +27,7 @@ public class NitrogenBarOverlay {
     private static final int ICON_SIZE = 16;
 
     public static void render(GuiGraphics g, DeltaTracker deltaTracker) {
-        if (ClientAbilityState.level < 1) {
+        if (!ClientAbilityState.active) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
