@@ -6,6 +6,8 @@
   "item.offense_armer.ability_potion_3": "能力开发药 III",
   "item.offense_armer.ability_potion_4": "能力开发药 IV",
   "item.offense_armer.ability_potion_5": "能力开发药 V",
+  "item.offense_armer.carbon_sieve": "碳分子筛",
+  "block.offense_armer.nitrogen_generator": "制氮机",
   "key.offense_armer.toggle_ability": "切换氮气装甲",
   "key.offense_armer.burst": "氮气爆冲",
   "key.categories.offense_armer": "氮气装甲",

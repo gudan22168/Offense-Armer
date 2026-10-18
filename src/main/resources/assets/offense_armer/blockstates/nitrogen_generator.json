@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,part=left": {"model": "offense_armer:block/psa_nitrogen_generator_left"},
+    "facing=east,part=left": {"model": "offense_armer:block/psa_nitrogen_generator_left", "y": 90},
+    "facing=south,part=left": {"model": "offense_armer:block/psa_nitrogen_generator_left", "y": 180},
+    "facing=west,part=left": {"model": "offense_armer:block/psa_nitrogen_generator_left", "y": 270},
+    "facing=north,part=right": {"model": "offense_armer:block/psa_nitrogen_generator_right"},
+    "facing=east,part=right": {"model": "offense_armer:block/psa_nitrogen_generator_right", "y": 90},
+    "facing=south,part=right": {"model": "offense_armer:block/psa_nitrogen_generator_right", "y": 180},
+    "facing=west,part=right": {"model": "offense_armer:block/psa_nitrogen_generator_right", "y": 270}
+  }
+}

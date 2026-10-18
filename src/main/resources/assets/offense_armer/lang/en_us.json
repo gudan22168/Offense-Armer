@@ -6,6 +6,8 @@
   "item.offense_armer.ability_potion_3": "Ability Developer Potion III",
   "item.offense_armer.ability_potion_4": "Ability Developer Potion IV",
   "item.offense_armer.ability_potion_5": "Ability Developer Potion V",
+  "item.offense_armer.carbon_sieve": "Carbon Molecular Sieve",
+  "block.offense_armer.nitrogen_generator": "Nitrogen Generator",
   "key.offense_armer.toggle_ability": "Toggle Nitrogen Armor",
   "key.offense_armer.burst": "Nitrogen Burst",
   "key.categories.offense_armer": "Offense Armer",
