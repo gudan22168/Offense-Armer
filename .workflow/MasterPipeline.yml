@@ -1,0 +1,26 @@
+version: '1.0'
+name: master-build
+displayName: 主分支构建
+triggers:
+  push:
+    branches:
+      precise:
+        - master
+stages:
+  - name: build
+    displayName: 构建
+    steps:
+      - step: build@gradle
+        name: build_gradle
+        displayName: Gradle 构建
+        # 运行 gradle 的 JDK（17），编译工具链 Java 21 由 foojay 自动拉取
+        jdkVersion: 17
+        # 实际使用 gradlew wrapper（8.8），此字段被覆盖
+        gradleVersion: 4.4
+        commands:
+          - chmod +x ./gradlew
+          - ./gradlew build --no-daemon
+        artifacts:
+          - name: BUILD_ARTIFACT
+            path:
+              - ./build/libs
