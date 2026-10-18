@@ -10,6 +10,7 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+    maven { url = "https://maven.shedaniel.me/" }
 }
 
 base {
@@ -98,6 +99,8 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     // Mekanism 氮气联动（可选）：编译期引用其化学 API，运行时用 ModList 判断是否存在。
     compileOnly files("libs/Mekanism-1.21.1-10.7.19.85.jar")
+    // Cloth Config（可选）：提供模组配置界面，未安装时无 GUI 但 mod 正常工作。
+    compileOnly "me.shedaniel.cloth:cloth-config-neoforge:15.0.140"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

@@ -12,6 +12,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -296,8 +297,11 @@ public class AbilityEvents {
         List<LivingEntity> mobs = level.getEntitiesOfClass(LivingEntity.class, area,
                 e -> e != player && !(e instanceof Player));
         for (LivingEntity mob : mobs) {
+            if (Config.cryoHostileOnly && !(mob instanceof Monster)) {
+                continue;
+            }
             mob.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1, false, true), player);
-            mob.hurt(mob.damageSources().freeze(), (float) Config.cryoDamage);
+            mob.hurt(player.damageSources().playerAttack(player), (float) Config.cryoDamage);
         }
 
         Vec3 pos = player.position();

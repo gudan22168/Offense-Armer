@@ -60,6 +60,10 @@ public class Config {
             .comment("Lv5 低温领域每脉冲对生物的冰冻伤害。")
             .defineInRange("cryoDamage", 1.0, 0.0, 100.0);
 
+    public static final ModConfigSpec.BooleanValue CRYO_HOSTILE_ONLY = BUILDER
+            .comment("低温领域是否只伤害敌对生物（不攻击动物/村民等被动生物）。")
+            .define("cryoHostileOnly", true);
+
     public static final ModConfigSpec.DoubleValue FLIGHT_EXTRA_DRAIN = BUILDER
             .comment("Lv4+ 飞行时每 tick 额外消耗的氮气量。")
             .defineInRange("flightExtraDrainPerTick", 0.05, 0.0, 100.0);
@@ -121,6 +125,7 @@ public class Config {
     public static double reflectRatio;
     public static int cryoRadius;
     public static double cryoDamage;
+    public static boolean cryoHostileOnly;
     public static double flightExtraDrain;
     public static double baseFlightSpeed;
     public static double burstFlightSpeed;
@@ -150,6 +155,7 @@ public class Config {
         reflectRatio = REFLECT_RATIO.get();
         cryoRadius = CRYO_RADIUS.get();
         cryoDamage = CRYO_DAMAGE.get();
+        cryoHostileOnly = CRYO_HOSTILE_ONLY.get();
         flightExtraDrain = FLIGHT_EXTRA_DRAIN.get();
         baseFlightSpeed = BASE_FLIGHT_SPEED.get();
         burstFlightSpeed = BURST_FLIGHT_SPEED.get();

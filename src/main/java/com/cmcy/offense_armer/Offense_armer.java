@@ -3,8 +3,10 @@ package com.cmcy.offense_armer;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.slf4j.Logger;
 
 /**
@@ -22,6 +24,10 @@ public class Offense_armer {
         ModItems.CREATIVE_MODE_TABS.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class,
+                (container, screen) -> ModList.get().isLoaded("cloth_config")
+                        ? ModConfigScreen.create(screen)
+                        : null);
 
         LOGGER.info("Offense Armer (氮气装甲) 加载完成。");
     }
