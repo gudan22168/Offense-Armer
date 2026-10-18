@@ -235,7 +235,7 @@ public class AbilityEvents {
             return;
         }
         // 静止时不显示马赫环
-        if (player.getDeltaMovement().lengthSqr() < 0.05) {
+        if (player.getDeltaMovement().lengthSqr() < 0.001) {
             return;
         }
         Vec3 pos = player.position();

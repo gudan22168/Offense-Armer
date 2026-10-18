@@ -49,9 +49,11 @@ public class ClientEvents {
         }
         PoseStack poseStack = event.getPoseStack();
         float bodyYaw = Mth.rotLerp(event.getPartialTick(), player.yBodyRotO, player.yBodyRot);
+        // 按住 Shift（下砸）时头朝下垂直俯冲，否则水平俯冲
+        float pitch = player.isShiftKeyDown() ? -90f : GLIDE_PITCH;
         float yaw = 180f - bodyYaw;
         poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
-        poseStack.mulPose(Axis.XP.rotationDegrees(GLIDE_PITCH));
+        poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
         poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
     }
 }
