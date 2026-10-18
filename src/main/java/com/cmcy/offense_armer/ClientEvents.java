@@ -17,8 +17,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
  */
 @EventBusSubscriber(modid = Offense_armer.MODID, value = Dist.CLIENT)
 public class ClientEvents {
-    /** 爆冲时的俯冲倾角（度）：80≈身体近乎水平俯冲。 */
-    private static final float GLIDE_PITCH = 80f;
+    /** 爆冲时的俯冲倾角（度）：负值=头朝前俯冲。 */
+    private static final float GLIDE_PITCH = -80f;
 
     private static boolean burstKeyDown = false;
 
@@ -45,9 +45,6 @@ public class ClientEvents {
             return;
         }
         if (!ClientSetup.BURST_KEY.isDown()) {
-            return;
-        }
-        if (player.getDeltaMovement().lengthSqr() < 0.05) {
             return;
         }
         PoseStack poseStack = event.getPoseStack();
