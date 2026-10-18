@@ -76,6 +76,10 @@ public class Config {
             .comment("Lv5 爆冲飞行速度（按住爆冲键时）。")
             .defineInRange("burstFlightSpeed", 0.5, 0.05, 2.0);
 
+    public static final ModConfigSpec.DoubleValue BURST_EXTRA_DRAIN = BUILDER
+            .comment("Lv5 爆冲时每 tick 额外消耗的氮气量（叠加在基础+飞行耗氮之上）。")
+            .defineInRange("burstExtraDrainPerTick", 0.15, 0.0, 100.0);
+
     public static final ModConfigSpec.IntValue BURST_BREAK_RADIUS = BUILDER
             .comment("Lv5 爆冲冲毁方块的半径（格）。")
             .defineInRange("burstBreakRadius", 1, 1, 4);
@@ -129,6 +133,7 @@ public class Config {
     public static double flightExtraDrain;
     public static double baseFlightSpeed;
     public static double burstFlightSpeed;
+    public static double burstExtraDrain;
     public static int burstBreakRadius;
     public static List<String> nitrogenFluidIds;
     public static String nitrogenFluidTag;
@@ -159,6 +164,7 @@ public class Config {
         flightExtraDrain = FLIGHT_EXTRA_DRAIN.get();
         baseFlightSpeed = BASE_FLIGHT_SPEED.get();
         burstFlightSpeed = BURST_FLIGHT_SPEED.get();
+        burstExtraDrain = BURST_EXTRA_DRAIN.get();
         burstBreakRadius = BURST_BREAK_RADIUS.get();
         nitrogenFluidIds = List.copyOf(NITROGEN_FLUID_IDS.get());
         nitrogenFluidTag = NITROGEN_FLUID_TAG.get();

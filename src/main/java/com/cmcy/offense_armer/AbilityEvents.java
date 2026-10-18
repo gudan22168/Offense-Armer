@@ -133,6 +133,7 @@ public class AbilityEvents {
         if (player.getAbilities().flying) {
             ability.consumeNitrogen((float) Config.flightExtraDrain);
             if (ability.getLevel() >= 5 && ability.isBursting()) {
+                ability.consumeNitrogen((float) Config.burstExtraDrain);
                 float burstSpeed = (float) Config.burstFlightSpeed;
                 if (player.getAbilities().getFlyingSpeed() != burstSpeed) {
                     player.getAbilities().setFlyingSpeed(burstSpeed);

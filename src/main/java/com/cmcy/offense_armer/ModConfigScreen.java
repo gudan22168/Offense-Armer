@@ -81,6 +81,9 @@ public class ModConfigScreen {
         flight.addEntry(e.startDoubleField(Component.literal("爆冲飞行速度"), Config.burstFlightSpeed)
                 .setDefaultValue(0.5).setMin(0.05).setMax(2.0)
                 .setSaveConsumer(v -> { Config.BURST_FLIGHT_SPEED.set(v); Config.burstFlightSpeed = v; }).build());
+        flight.addEntry(e.startDoubleField(Component.literal("爆冲额外耗氮/tick"), Config.burstExtraDrain)
+                .setDefaultValue(0.15).setMin(0.0).setMax(100.0)
+                .setSaveConsumer(v -> { Config.BURST_EXTRA_DRAIN.set(v); Config.burstExtraDrain = v; }).build());
         flight.addEntry(e.startIntField(Component.literal("爆冲破块半径（格）"), Config.burstBreakRadius)
                 .setDefaultValue(1).setMin(1).setMax(4)
                 .setSaveConsumer(v -> { Config.BURST_BREAK_RADIUS.set(v); Config.burstBreakRadius = v; }).build());

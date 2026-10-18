@@ -54,6 +54,10 @@ public class NitrogenGeneratorBlock extends Block implements EntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         Direction facing = ctx.getHorizontalDirection().getOpposite();
+        BlockPos otherPos = ctx.getClickedPos().relative(facing.getClockWise());
+        if (!ctx.getLevel().getBlockState(otherPos).canBeReplaced(ctx)) {
+            return null; // 右半放不下，取消整台机器的放置
+        }
         return this.defaultBlockState().setValue(FACING, facing).setValue(PART, Part.LEFT);
     }
 
@@ -76,7 +80,7 @@ public class NitrogenGeneratorBlock extends Block implements EntityBlock {
                     : pos.relative(facing.getCounterClockWise());
             BlockState other = level.getBlockState(otherPos);
             if (other.is(this) && other.getValue(PART) != part) {
-                level.destroyBlock(otherPos, false, player);
+                level.removeBlock(otherPos, false);
             }
         }
         return super.playerWillDestroy(level, pos, state, player);
