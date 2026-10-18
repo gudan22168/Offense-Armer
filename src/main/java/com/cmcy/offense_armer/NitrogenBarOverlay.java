@@ -25,6 +25,8 @@ public class NitrogenBarOverlay {
     private static final int BAR_WIDTH = 100;
     private static final int BAR_HEIGHT = 10;
     private static final int ICON_SIZE = 16;
+    /** 氮气低于该比例（20%）时填充层变红提醒。 */
+    private static final float LOW_THRESHOLD = 0.2f;
 
     public static void render(GuiGraphics g, DeltaTracker deltaTracker) {
         if (!ClientAbilityState.active) {
@@ -58,7 +60,12 @@ public class NitrogenBarOverlay {
             g.blit(BG_TEXTURE, bx, by, 0, 0f, 0f, BAR_WIDTH, BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT);
             int fillW = (int) (BAR_WIDTH * frac);
             if (fillW > 0) {
+                // 氮气过低（<20%）时填充层变红提醒
+                if (frac < LOW_THRESHOLD) {
+                    g.setColor(1.0f, 0.25f, 0.25f, 1.0f);
+                }
                 g.blit(FILL_TEXTURE, bx, by, 0, 0f, 0f, fillW, BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT);
+                g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
             }
         }
 

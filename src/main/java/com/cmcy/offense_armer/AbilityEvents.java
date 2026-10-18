@@ -49,45 +49,57 @@ public class AbilityEvents {
 
     private static void tickAbility(ServerPlayer player) {
         NitrogenAbility ability = player.getData(ModAttachments.NITROGEN_ABILITY.get());
+        ability.tickFallGrace();
         boolean changed = false;
 
         if (ability.isActive()) {
             ability.consumeNitrogen((float) Config.drainPerTick);
 
-            double regen = Config.regenForLevel(ability.getLevel());
-            if (regen > 0.0) {
-                ability.addNitrogen((float) regen);
-            }
-
             if (ability.getNitrogen() <= 0f) {
+                // 氮气耗尽：立即关闭能力、收回飞行、停爆冲、开启落地免伤宽限
                 ability.setActive(false);
+                ability.setBursting(false);
+                ability.setFallGraceTicks(200);
+                player.fallDistance = 0f;
+                cleanupFlight(player, ability);
                 player.displayClientMessage(Component.translatable("message.offense_armer.depleted"), true);
-            }
+                changed = true;
+            } else {
+                double regen = Config.regenForLevel(ability.getLevel());
+                if (regen > 0.0) {
+                    ability.addNitrogen((float) regen);
+                }
 
-            if (stripArmor(player)) {
-                player.displayClientMessage(Component.translatable("message.offense_armer.armor_blocked"), true);
-            }
+                if (stripArmor(player)) {
+                    player.displayClientMessage(Component.translatable("message.offense_armer.armor_blocked"), true);
+                }
 
-            if (ability.getLevel() >= 3) {
-                spawnTrail(player);
-            }
+                if (ability.getLevel() >= 3) {
+                    spawnTrail(player);
+                }
 
-            if (ability.getLevel() >= 4) {
-                handleFlight(player, ability);
-            }
+                if (ability.getLevel() >= 4) {
+                    handleFlight(player, ability);
+                }
 
-            if (ability.getLevel() >= 5 && player.tickCount % 10 == 0) {
-                applyCryoField(player);
-            }
+                if (ability.getLevel() >= 5 && player.tickCount % 10 == 0) {
+                    applyCryoField(player);
+                }
 
-            if (ability.getLevel() >= 5 && ability.getNitrogen() >= ability.getMaxNitrogen()
-                    && player.tickCount % 10 == 0) {
-                MekanismCompat.reverseCharge(player);
-            }
+                if (ability.getLevel() >= 5 && ability.getNitrogen() >= ability.getMaxNitrogen()
+                        && player.tickCount % 10 == 0) {
+                    MekanismCompat.reverseCharge(player);
+                }
 
-            changed = true;
+                changed = true;
+            }
         } else {
             cleanupFlight(player, ability);
+
+            // 落地免伤宽限：宽限期内持续清零坠落距离
+            if (ability.getFallGraceTicks() > 0) {
+                player.fallDistance = 0f;
+            }
 
             // 兼容 Mekanism 氮气获取：未开启时从附近储罐/容器补充氮气
             if (ability.getNitrogen() < ability.getMaxNitrogen() && player.tickCount % 10 == 0) {
@@ -312,6 +324,13 @@ public class AbilityEvents {
             return;
         }
         NitrogenAbility ability = player.getData(ModAttachments.NITROGEN_ABILITY.get());
+
+        // 耗尽后的落地免伤宽限（不依赖 active）
+        if (ability.getFallGraceTicks() > 0 && event.getSource().is(DamageTypes.FALL)) {
+            event.setCanceled(true);
+            return;
+        }
+
         if (!ability.isActive()) {
             return;
         }

@@ -16,6 +16,8 @@ public class NitrogenAbility {
     private boolean active;
     /** 爆冲状态（客户端按键同步，不持久化）。 */
     private boolean bursting;
+    /** 耗尽后的落地免伤宽限期（tick 数，不持久化）。 */
+    private int fallGraceTicks;
 
     public NitrogenAbility() {
         this.level = 0;
@@ -59,6 +61,20 @@ public class NitrogenAbility {
 
     public void setBursting(boolean bursting) {
         this.bursting = bursting;
+    }
+
+    public int getFallGraceTicks() {
+        return fallGraceTicks;
+    }
+
+    public void setFallGraceTicks(int ticks) {
+        this.fallGraceTicks = Math.max(0, ticks);
+    }
+
+    public void tickFallGrace() {
+        if (this.fallGraceTicks > 0) {
+            this.fallGraceTicks--;
+        }
     }
 
     public float getMaxNitrogen() {
