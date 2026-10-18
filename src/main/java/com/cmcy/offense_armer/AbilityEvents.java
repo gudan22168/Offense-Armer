@@ -210,19 +210,32 @@ public class AbilityEvents {
         }
     }
 
-    /** Lv5 爆冲时的马赫环（明亮紧致的冲击波粒子环，END_ROD 更清晰）。 */
+    /** Lv5 爆冲时的马赫环（垂直于前进方向的明亮冲击环，END_ROD 更清晰）。 */
     private static void spawnMachRing(ServerPlayer player) {
         if (player.tickCount % 2 != 0) {
             return;
         }
         Vec3 pos = player.position();
+        // 环面垂直于视线方向（前进方向），而非水平
+        Vec3 look = player.getLookAngle().normalize();
+        Vec3 right = look.cross(new Vec3(0.0, 1.0, 0.0));
+        if (right.lengthSqr() < 1.0e-4) {
+            right = new Vec3(1.0, 0.0, 0.0);
+        } else {
+            right = right.normalize();
+        }
+        Vec3 up = right.cross(look).normalize();
+        double cy = pos.y + 1.0;
         int n = 20;
         for (int k = 0; k < n; k++) {
             double angle = k * (Math.PI * 2.0 / n);
             double cos = Math.cos(angle);
             double sin = Math.sin(angle);
-            player.serverLevel().sendParticles(ParticleTypes.END_ROD, pos.x + cos * 0.6, pos.y + 1.0, pos.z + sin * 0.6, 1, 0.0, 0.0, 0.0, 0.0);
-            player.serverLevel().sendParticles(ParticleTypes.CLOUD, pos.x + cos * 0.45, pos.y + 1.0, pos.z + sin * 0.45, 1, 0.0, 0.0, 0.0, 0.01);
+            double ox = right.x * cos + up.x * sin;
+            double oy = right.y * cos + up.y * sin;
+            double oz = right.z * cos + up.z * sin;
+            player.serverLevel().sendParticles(ParticleTypes.END_ROD, pos.x + ox * 0.6, cy + oy * 0.6, pos.z + oz * 0.6, 1, 0.0, 0.0, 0.0, 0.0);
+            player.serverLevel().sendParticles(ParticleTypes.CLOUD, pos.x + ox * 0.45, cy + oy * 0.45, pos.z + oz * 0.45, 1, 0.0, 0.0, 0.0, 0.01);
         }
     }
 
