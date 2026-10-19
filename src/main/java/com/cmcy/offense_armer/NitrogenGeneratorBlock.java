@@ -3,6 +3,7 @@ package com.cmcy.offense_armer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -75,6 +76,10 @@ public class NitrogenGeneratorBlock extends Block implements EntityBlock {
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide()) {
+            // 掉落机器内的分子筛
+            if (level.getBlockEntity(pos) instanceof NitrogenGeneratorBlockEntity be) {
+                Containers.dropContents(level, pos, be.getInventory());
+            }
             Part part = state.getValue(PART);
             Direction facing = state.getValue(FACING);
             BlockPos otherPos = part == Part.LEFT
@@ -82,6 +87,9 @@ public class NitrogenGeneratorBlock extends Block implements EntityBlock {
                     : pos.relative(facing.getCounterClockWise());
             BlockState other = level.getBlockState(otherPos);
             if (other.is(this) && other.getValue(PART) != part) {
+                if (level.getBlockEntity(otherPos) instanceof NitrogenGeneratorBlockEntity otherBe) {
+                    Containers.dropContents(level, otherPos, otherBe.getInventory());
+                }
                 level.removeBlock(otherPos, false);
             }
         }

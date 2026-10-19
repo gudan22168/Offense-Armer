@@ -12,6 +12,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 @EventBusSubscriber(modid = Offense_armer.MODID, value = Dist.CLIENT)
 public class ClientSetup {
@@ -44,6 +45,12 @@ public class ClientSetup {
     @SubscribeEvent
     public static void registerMenuScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.NITROGEN_GENERATOR.get(), NitrogenGeneratorScreen::new);
+    }
+
+    @SubscribeEvent
+    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(ModParticles.MACH_RING.get(), MachRingParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.NITRO_GLOW.get(), NitroGlowParticle.Provider::new);
     }
 
     @SubscribeEvent
