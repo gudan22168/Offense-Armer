@@ -120,6 +120,26 @@ public class Config {
             .comment("耗尽过载后，氮气恢复到该比例（占上限）才允许重新开启能力。")
             .defineInRange("reenableThreshold", 0.2, 0.0, 1.0);
 
+    public static final ModConfigSpec.IntValue GEO_RADIUS = BUILDER
+            .comment("地热电站抽取熔岩的水平半径（格）。")
+            .defineInRange("geoRadius", 16, 1, 64);
+
+    public static final ModConfigSpec.IntValue GEO_LAVA_PER_SCAN = BUILDER
+            .comment("地热电站每 20 tick 最多抽取多少格熔岩（抽够就停）。")
+            .defineInRange("geoLavaPerScan", 8, 1, 64);
+
+    public static final ModConfigSpec.IntValue GEO_ENERGY_PER_LAVA = BUILDER
+            .comment("每格熔岩产生的能量。")
+            .defineInRange("geoEnergyPerLava", 500, 1, 100000);
+
+    public static final ModConfigSpec.IntValue GEO_PUSH_PER_TICK = BUILDER
+            .comment("地热电站每 tick 无线推送的最大能量。")
+            .defineInRange("geoPushPerTick", 1000, 1, 1000000);
+
+    public static final ModConfigSpec.IntValue GEO_WIRELESS_RADIUS = BUILDER
+            .comment("地热电站无线供电半径（格）。")
+            .defineInRange("geoWirelessRadius", 12, 1, 32);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     public static double maxNitrogen;
@@ -144,6 +164,11 @@ public class Config {
     public static boolean burstDropItems;
     public static double impactDamage;
     public static double reenableThreshold;
+    public static int geoRadius;
+    public static int geoLavaPerScan;
+    public static int geoEnergyPerLava;
+    public static int geoPushPerTick;
+    public static int geoWirelessRadius;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -175,6 +200,11 @@ public class Config {
         burstDropItems = BURST_DROP_ITEMS.get();
         impactDamage = IMPACT_DAMAGE.get();
         reenableThreshold = REENABLE_THRESHOLD.get();
+        geoRadius = GEO_RADIUS.get();
+        geoLavaPerScan = GEO_LAVA_PER_SCAN.get();
+        geoEnergyPerLava = GEO_ENERGY_PER_LAVA.get();
+        geoPushPerTick = GEO_PUSH_PER_TICK.get();
+        geoWirelessRadius = GEO_WIRELESS_RADIUS.get();
         NitrogenCompat.reload();
     }
 

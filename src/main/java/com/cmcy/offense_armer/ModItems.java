@@ -35,6 +35,12 @@ public class ModItems {
     public static final DeferredItem<BlockItem> NITROGEN_GENERATOR = ITEMS.register("nitrogen_generator",
             () -> new BlockItem(ModBlocks.NITROGEN_GENERATOR.get(), new Item.Properties()));
 
+    public static final DeferredItem<Item> HEAT_ROD = ITEMS.register("heat_rod",
+            () -> new HeatRodItem(new Item.Properties().stacksTo(1).durability(2031)));
+
+    public static final DeferredItem<BlockItem> GEOTHERMAL_PLANT = ITEMS.register("geothermal_plant",
+            () -> new BlockItem(ModBlocks.GEOTHERMAL_PLANT.get(), new Item.Properties()));
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = CREATIVE_MODE_TABS.register(
             "offense_armer",
             () -> CreativeModeTab.builder()
@@ -49,6 +55,8 @@ public class ModItems {
                         output.accept(ABILITY_POTION_5.get());
                         output.accept(NITROGEN_GENERATOR.get());
                         output.accept(CARBON_SIEVE.get());
+                        output.accept(GEOTHERMAL_PLANT.get());
+                        output.accept(HEAT_ROD.get());
                     })
                     .build());
 }

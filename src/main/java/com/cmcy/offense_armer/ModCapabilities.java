@@ -17,5 +17,10 @@ public class ModCapabilities {
                 ModBlocks.NITROGEN_GENERATOR_BE.get(),
                 (be, side) -> be.getEnergyStorage()
         );
+        event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                ModBlocks.GEOTHERMAL_PLANT_BE.get(),
+                (be, side) -> be.getEnergyStorage()
+        );
     }
 }

@@ -18,4 +18,11 @@ public class ModBlocks {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NitrogenGeneratorBlockEntity>> NITROGEN_GENERATOR_BE =
             BLOCK_ENTITIES.register("nitrogen_generator",
                     () -> BlockEntityType.Builder.of(NitrogenGeneratorBlockEntity::new, NITROGEN_GENERATOR.get()).build(null));
+
+    public static final DeferredBlock<GeothermalPlantBlock> GEOTHERMAL_PLANT = BLOCKS.register("geothermal_plant",
+            () -> new GeothermalPlantBlock(BlockBehaviour.Properties.of().strength(3.5f).noOcclusion()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeothermalPlantBlockEntity>> GEOTHERMAL_PLANT_BE =
+            BLOCK_ENTITIES.register("geothermal_plant",
+                    () -> BlockEntityType.Builder.of(GeothermalPlantBlockEntity::new, GEOTHERMAL_PLANT.get()).build(null));
 }
