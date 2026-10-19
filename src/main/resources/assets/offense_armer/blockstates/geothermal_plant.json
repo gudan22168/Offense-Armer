@@ -1,12 +1,28 @@
 {
   "variants": {
-    "part=nw,has_rod=false": { "model": "offense_armer:block/geothermal_plant_nw" },
-    "part=nw,has_rod=true": { "model": "offense_armer:block/geothermal_plant_nw_on" },
-    "part=ne,has_rod=false": { "model": "offense_armer:block/geothermal_plant_base" },
-    "part=ne,has_rod=true": { "model": "offense_armer:block/geothermal_plant_base" },
-    "part=sw,has_rod=false": { "model": "offense_armer:block/geothermal_plant_base" },
-    "part=sw,has_rod=true": { "model": "offense_armer:block/geothermal_plant_base" },
-    "part=se,has_rod=false": { "model": "offense_armer:block/geothermal_plant_base" },
-    "part=se,has_rod=true": { "model": "offense_armer:block/geothermal_plant_base" }
+    "part=nw,has_rod=false": {
+      "model": "offense_armer:block/geo_plant_nw"
+    },
+    "part=nw,has_rod=true": {
+      "model": "offense_armer:block/geo_plant_nw_on"
+    },
+    "part=ne,has_rod=false": {
+      "model": "offense_armer:block/geo_plant_ne"
+    },
+    "part=ne,has_rod=true": {
+      "model": "offense_armer:block/geo_plant_ne_on"
+    },
+    "part=sw,has_rod=false": {
+      "model": "offense_armer:block/geo_plant_sw"
+    },
+    "part=sw,has_rod=true": {
+      "model": "offense_armer:block/geo_plant_sw_on"
+    },
+    "part=se,has_rod=false": {
+      "model": "offense_armer:block/geo_plant_se"
+    },
+    "part=se,has_rod=true": {
+      "model": "offense_armer:block/geo_plant_se_on"
+    }
   }
 }
