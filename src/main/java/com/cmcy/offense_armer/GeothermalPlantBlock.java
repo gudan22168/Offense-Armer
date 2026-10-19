@@ -164,4 +164,17 @@ public class GeothermalPlantBlock extends Block implements EntityBlock {
             case SE -> pos.north().west();
         };
     }
+
+    /** 同步四格的送热棒状态（模型 2×2 拼接，棒跨在中心，四格都要切换）。 */
+    public static void setRodState(Level level, BlockPos master, boolean hasRod) {
+        for (int dx = 0; dx <= 1; dx++) {
+            for (int dz = 0; dz <= 1; dz++) {
+                BlockPos p = master.offset(dx, 0, dz);
+                BlockState s = level.getBlockState(p);
+                if (s.is(ModBlocks.GEOTHERMAL_PLANT.get()) && s.getValue(HAS_ROD) != hasRod) {
+                    level.setBlock(p, s.setValue(HAS_ROD, hasRod), 3);
+                }
+            }
+        }
+    }
 }

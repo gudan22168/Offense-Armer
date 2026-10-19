@@ -76,9 +76,9 @@ public class GeothermalPlantBlockEntity extends BlockEntity {
             return;
         }
         boolean hasRod = !be.inventory.getItem(0).isEmpty();
-        // 与方块状态同步（棒坏掉/插入）
+        // 与方块状态同步（棒坏掉/插入），四格一起切换
         if (be.getBlockState().getValue(GeothermalPlantBlock.HAS_ROD) != hasRod) {
-            level.setBlock(pos, be.getBlockState().setValue(GeothermalPlantBlock.HAS_ROD, hasRod), 3);
+            GeothermalPlantBlock.setRodState(level, pos, hasRod);
         }
         if (hasRod && level.getGameTime() % 20 == 0) {
             be.scanAndExtract(level, pos);
