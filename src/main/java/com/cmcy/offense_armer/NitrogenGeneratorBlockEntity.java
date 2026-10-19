@@ -105,13 +105,12 @@ public class NitrogenGeneratorBlockEntity extends BlockEntity implements MenuPro
         if (level.getGameTime() % 10 != 0) {
             return;
         }
-        // 生产：有碳分子筛才产氮，并消耗分子筛耐久
+        // 生产：有碳分子筛且氮气未满才产氮、才消耗耐久
         ItemStack sieve = be.inventory.getItem(0);
-        if (sieve.getItem() instanceof CarbonSieveItem && sieve.getDamageValue() < sieve.getMaxDamage()) {
-            if (be.nitrogen < MAX_NITROGEN) {
-                be.nitrogen = Math.min(MAX_NITROGEN, be.nitrogen + 50);
-                be.setChanged();
-            }
+        if (sieve.getItem() instanceof CarbonSieveItem
+                && sieve.getDamageValue() < sieve.getMaxDamage()
+                && be.nitrogen < MAX_NITROGEN) {
+            be.nitrogen = Math.min(MAX_NITROGEN, be.nitrogen + 50);
             sieve.setDamageValue(sieve.getDamageValue() + 1);
             if (sieve.getDamageValue() >= sieve.getMaxDamage()) {
                 be.inventory.setItem(0, ItemStack.EMPTY);
