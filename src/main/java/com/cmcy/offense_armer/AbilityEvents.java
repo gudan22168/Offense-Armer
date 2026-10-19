@@ -3,7 +3,6 @@ package com.cmcy.offense_armer;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.FluidTags;
@@ -284,7 +283,7 @@ public class AbilityEvents {
         }
 
         Vec3 pos = player.position();
-        player.serverLevel().sendParticles(ParticleTypes.SNOWFLAKE, pos.x, pos.y + 1.0, pos.z, 6, r * 0.5, 2.0, r * 0.5, 0.02);
+        player.serverLevel().sendParticles(ModParticles.NITRO_GLOW.get(), pos.x, pos.y + 1.0, pos.z, 6, r * 0.5, 2.0, r * 0.5, 0.0);
     }
 
     /** 能力开启时脱下所有护甲，并喷出白色氮气粒子。 */
@@ -302,8 +301,7 @@ public class AbilityEvents {
         }
         if (removed) {
             Vec3 pos = player.position();
-            player.serverLevel().sendParticles(ParticleTypes.CLOUD, pos.x, pos.y + 1.0, pos.z, 30, 0.4, 0.6, 0.4, 0.02);
-            player.serverLevel().sendParticles(ParticleTypes.SNOWFLAKE, pos.x, pos.y + 1.0, pos.z, 20, 0.4, 0.6, 0.4, 0.05);
+            player.serverLevel().sendParticles(ModParticles.NITRO_GLOW.get(), pos.x, pos.y + 1.0, pos.z, 40, 0.4, 0.6, 0.4, 0.02);
         }
         return removed;
     }
@@ -370,8 +368,7 @@ public class AbilityEvents {
         event.setCanceled(true);
         Projectile projectile = event.getProjectile();
         Vec3 pos = projectile.position();
-        player.serverLevel().sendParticles(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, 12, 0.15, 0.15, 0.15, 0.02);
-        player.serverLevel().sendParticles(ParticleTypes.SNOWFLAKE, pos.x, pos.y, pos.z, 8, 0.15, 0.15, 0.15, 0.05);
+        player.serverLevel().sendParticles(ModParticles.NITRO_GLOW.get(), pos.x, pos.y, pos.z, 16, 0.15, 0.15, 0.15, 0.02);
         projectile.discard();
     }
 
