@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -28,12 +29,52 @@ public class NitrogenGeneratorBlockEntity extends BlockEntity implements MenuPro
     public static final int MAX_ENERGY = 10000;
     public static final int MAX_AIR = 10000;
     public static final int MAX_NITROGEN = 10000;
+    /** 每轮产氮消耗的能量。 */
+    public static final int ENERGY_PER_CYCLE = 10;
 
     private int energy = MAX_ENERGY;
     private int air = MAX_AIR;
     private int nitrogen = 0;
 
     private final SimpleContainer inventory = new SimpleContainer(1);
+
+    /** 能量输入能力（发电机 / 无线供电 / 其他模组电缆都可通过它充电）。 */
+    private final IEnergyStorage energyStorage = new IEnergyStorage() {
+        @Override
+        public int receiveEnergy(int toReceive, boolean simulate) {
+            int accepted = Math.min(MAX_ENERGY - energy, Math.max(0, toReceive));
+            if (accepted > 0 && !simulate) {
+                energy += accepted;
+                setChanged();
+            }
+            return accepted;
+        }
+
+        @Override
+        public int extractEnergy(int maxExtract, boolean simulate) {
+            return 0;
+        }
+
+        @Override
+        public int getEnergyStored() {
+            return energy;
+        }
+
+        @Override
+        public int getMaxEnergyStored() {
+            return MAX_ENERGY;
+        }
+
+        @Override
+        public boolean canExtract() {
+            return false;
+        }
+
+        @Override
+        public boolean canReceive() {
+            return true;
+        }
+    };
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -87,6 +128,10 @@ public class NitrogenGeneratorBlockEntity extends BlockEntity implements MenuPro
         return data;
     }
 
+    public IEnergyStorage getEnergyStorage() {
+        return energyStorage;
+    }
+
     @Override
     public Component getDisplayName() {
         return Component.translatable("block.offense_armer.nitrogen_generator");
@@ -105,11 +150,13 @@ public class NitrogenGeneratorBlockEntity extends BlockEntity implements MenuPro
         if (level.getGameTime() % 10 != 0) {
             return;
         }
-        // 生产：有碳分子筛且氮气未满才产氮、才消耗耐久
+        // 生产：有分子筛 + 氮气未满 + 电够，才产氮、扣耐久
         ItemStack sieve = be.inventory.getItem(0);
         if (sieve.getItem() instanceof CarbonSieveItem
                 && sieve.getDamageValue() < sieve.getMaxDamage()
-                && be.nitrogen < MAX_NITROGEN) {
+                && be.nitrogen < MAX_NITROGEN
+                && be.energy >= ENERGY_PER_CYCLE) {
+            be.energy -= ENERGY_PER_CYCLE;
             be.nitrogen = Math.min(MAX_NITROGEN, be.nitrogen + 50);
             sieve.setDamageValue(sieve.getDamageValue() + 1);
             if (sieve.getDamageValue() >= sieve.getMaxDamage()) {
