@@ -32,7 +32,7 @@ public class NitrogenGeneratorBlockEntity extends BlockEntity implements MenuPro
     /** 每轮产氮消耗的能量。 */
     public static final int ENERGY_PER_CYCLE = 10;
 
-    private int energy = MAX_ENERGY;
+    private int energy = 0;
     private int air = MAX_AIR;
     private int nitrogen = 0;
 
