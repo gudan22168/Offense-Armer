@@ -11,13 +11,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * 地热电站管理界面：储能、连接设备列表、解除连接。
+ * 地热电站管理界面：电站状态（储能/送热棒/熔岩抽取）+ 连接设备列表 + 解除连接。
  */
 public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPlantMenu> {
     private static final int W = 250;
-    private static final int H = 196;
+    private static final int H = 214;
     private static final int ROW_H = 22;
-    private static final int MAX_ROWS = 5;
+    private static final int MAX_ROWS = 4;
+    private static final int ROW_Y = 98;
 
     private static final int C_BG = 0xFF0E141C;
     private static final int C_PANEL = 0xFF16202C;
@@ -26,6 +27,7 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
     private static final int C_ACCENT = 0xFF5CE0D4;
     private static final int C_TEXT = 0xFFDCE8F2;
     private static final int C_DIM = 0xFF6E8497;
+    private static final int C_WARN = 0xFFC09060;
 
     public GeothermalPlantScreen(GeothermalPlantMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
@@ -67,6 +69,7 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
         g.fill(x, y, x + 1, y + H, C_BORDER);
         g.fill(x + W - 1, y, x + W, y + H, C_BORDER);
         g.fill(x + 1, y + 24, x + W - 1, y + 25, C_BORDER);
+        g.fill(x + 1, y + 82, x + W - 1, y + 83, C_BORDER);
     }
 
     @Override
@@ -76,23 +79,32 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
 
         int energy = menu.getEnergy();
         int max = GeothermalPlantBlockEntity.MAX_ENERGY;
-        g.drawString(font, "储能 " + energy + " / " + max, x, 28, C_TEXT, false);
-
-        int barX = x;
-        int barY = 39;
+        g.drawString(font, "储能 " + energy + " / " + max, x, 30, C_TEXT, false);
+        int barY = 41;
         int barW = W - 20;
-        g.fill(barX, barY, barX + barW, barY + 6, 0xFF0A1016);
+        g.fill(x, barY, x + barW, barY + 6, 0xFF0A1016);
         int fill = (int) ((long) barW * Math.min(energy, max) / max);
         if (fill > 0) {
-            g.fill(barX, barY, barX + fill, barY + 6, C_ACCENT);
+            g.fill(x, barY, x + fill, barY + 6, C_ACCENT);
         }
 
+        int rod = menu.getRodDurability();
+        if (rod < 0) {
+            g.drawString(font, "送热棒：未安装", x, 52, C_WARN, false);
+        } else {
+            g.drawString(font, "送热棒耐久：" + rod, x, 52, C_TEXT, false);
+        }
+        g.drawString(font, "已抽取熔岩：" + menu.getLavaMined() + " 格", x, 62, C_TEXT, false);
+        int scan = menu.getLastScanFound();
+        g.drawString(font, "最近扫描：" + (scan > 0 ? scan + " 块熔岩" : "未发现熔岩源"),
+                x, 72, scan > 0 ? C_TEXT : C_WARN, false);
+
         List<ModNetwork.PlantLink> links = links();
-        g.drawString(font, "连接设备 (" + links.size() + ")", x, 52, C_DIM, false);
+        g.drawString(font, "连接设备 (" + links.size() + ")", x, 86, C_DIM, false);
 
         for (int i = 0; i < Math.min(links.size(), MAX_ROWS); i++) {
             ModNetwork.PlantLink link = links.get(i);
-            int ry = 66 + i * ROW_H;
+            int ry = ROW_Y + i * ROW_H;
             boolean hover = mx >= x + 212 && mx < x + 228 && my >= ry + 2 && my < ry + 16;
             g.fill(x, ry, W - 10, ry + ROW_H - 3, hover ? C_PANEL_HOVER : C_PANEL);
 
@@ -112,7 +124,6 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
                 g.drawString(font, "离线", x + 152, ry + 5, 0xFFB05050, false);
             }
 
-            // 解除按钮
             int bx = x + 212;
             boolean bh = mx >= bx && mx < bx + 16 && my >= ry + 2 && my < ry + 16;
             g.fill(bx, ry + 2, bx + 16, ry + 16, bh ? 0xFF8A3030 : 0xFF3A2028);
@@ -120,15 +131,14 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
         }
 
         if (links.isEmpty()) {
-            g.drawString(font, "暂无连接设备", x + 5, 72, C_DIM, false);
-            g.drawString(font, "用供电连接器 SHIFT+右键 设备", x + 5, 84, C_DIM, false);
+            g.drawString(font, "暂无连接设备", x + 5, ROW_Y + 6, C_DIM, false);
+            g.drawString(font, "用供电连接器 SHIFT+右键 设备", x + 5, ROW_Y + 18, C_DIM, false);
         }
 
-        // 底部按钮
-        boolean clearHover = mx >= x && mx < x + 70 && my >= 172 && my < 188;
-        g.fill(x, 172, x + 70, 188, clearHover ? 0xFF8A3030 : 0xFF3A2028);
-        g.drawString(font, "全部断开", x + 8, 176, 0xFFE0B0B0, false);
-        g.drawString(font, "X 解除单台", x + 80, 176, C_DIM, false);
+        boolean clearHover = mx >= x && mx < x + 70 && my >= 188 && my < 204;
+        g.fill(x, 188, x + 70, 204, clearHover ? 0xFF8A3030 : 0xFF3A2028);
+        g.drawString(font, "全部断开", x + 8, 192, 0xFFE0B0B0, false);
+        g.drawString(font, "X 解除单台", x + 80, 192, C_DIM, false);
     }
 
     @Override
@@ -136,7 +146,7 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
         if (button == 0) {
             List<ModNetwork.PlantLink> links = links();
             for (int i = 0; i < Math.min(links.size(), MAX_ROWS); i++) {
-                int by = 66 + i * ROW_H + 2;
+                int by = ROW_Y + i * ROW_H + 2;
                 if (mx >= leftPos + 10 + 202 && mx < leftPos + 10 + 218
                         && my >= topPos + by && my < topPos + by + 14) {
                     PacketDistributor.sendToServer(
@@ -145,7 +155,7 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
                 }
             }
             if (mx >= leftPos + 10 && mx < leftPos + 80
-                    && my >= topPos + 172 && my < topPos + 188) {
+                    && my >= topPos + 188 && my < topPos + 204) {
                 PacketDistributor.sendToServer(new ModNetwork.ClearLinksPayload(menu.getPlantPos()));
                 return true;
             }

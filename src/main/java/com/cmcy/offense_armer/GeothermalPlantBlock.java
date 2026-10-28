@@ -155,7 +155,7 @@ public class GeothermalPlantBlock extends Block implements EntityBlock {
         }
         BlockPos master = getMasterPos(pos, state);
         if (level.getBlockEntity(master) instanceof GeothermalPlantBlockEntity be) {
-            player.openMenu(be);
+            player.openMenu(be, buf -> buf.writeBlockPos(be.getBlockPos()));
         }
     }
 

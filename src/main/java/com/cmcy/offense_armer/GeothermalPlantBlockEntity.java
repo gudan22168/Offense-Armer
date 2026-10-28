@@ -30,6 +30,8 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
     public static final int MAX_ENERGY = 100_000;
 
     private int energy = 0;
+    private int lavaMined = 0;
+    private int lastScanFound = 0;
     private final SimpleContainer inventory = new SimpleContainer(1);
     /** 已连接的用电设备坐标。 */
     private final List<BlockPos> links = new ArrayList<>();
@@ -74,7 +76,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
     private final ContainerData data = new ContainerData() {
         @Override
         public int getCount() {
-            return 2;
+            return 5;
         }
 
         @Override
@@ -82,6 +84,12 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
             return switch (index) {
                 case 0 -> energy;
                 case 1 -> links.size();
+                case 2 -> lavaMined;
+                case 3 -> {
+                    ItemStack rod = inventory.getItem(0);
+                    yield rod.isEmpty() ? -1 : rod.getMaxDamage() - rod.getDamageValue();
+                }
+                case 4 -> lastScanFound;
                 default -> 0;
             };
         }
@@ -204,6 +212,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
                     level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
                     this.energy = Math.min(MAX_ENERGY, this.energy + Config.geoEnergyPerLava);
                     mined++;
+                    this.lavaMined++;
                     ItemStack rod = this.inventory.getItem(0);
                     rod.setDamageValue(rod.getDamageValue() + 1);
                     if (rod.getDamageValue() >= rod.getMaxDamage()) {
@@ -214,6 +223,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
                 }
             }
         }
+        this.lastScanFound = mined;
     }
 
     public boolean tryInsertRod(ItemStack stack) {
@@ -230,6 +240,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
         tag.putInt("Energy", energy);
+        tag.putInt("LavaMined", lavaMined);
         tag.putLongArray("Links", links.stream().mapToLong(BlockPos::asLong).toArray());
         ContainerHelper.saveAllItems(tag, inventory.getItems(), provider);
     }
@@ -240,6 +251,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
         if (tag.contains("Energy")) {
             energy = tag.getInt("Energy");
         }
+        lavaMined = tag.getInt("LavaMined");
         links.clear();
         for (long l : tag.getLongArray("Links")) {
             links.add(BlockPos.of(l));
