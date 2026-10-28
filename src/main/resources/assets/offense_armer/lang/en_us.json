@@ -31,5 +31,11 @@
   "message.offense_armer.linker_too_far": "Out of connection range",
   "message.offense_armer.linker_not_device": "This block does not accept power",
   "message.offense_armer.linker_linked": "Linked device: %s, %s, %s",
-  "message.offense_armer.linker_already": "This device is already linked"
+  "message.offense_armer.linker_already": "This device is already linked",
+  "tooltip.offense_armer.linker_bound": "Bound plant: %s, %s, %s",
+  "tooltip.offense_armer.linker_unbound": "No plant bound (right-click a plant)",
+  "tooltip.offense_armer.bar_energy": "Energy: %s / %s",
+  "tooltip.offense_armer.bar_air": "Compressed Air: %s / %s",
+  "tooltip.offense_armer.bar_nitrogen": "Nitrogen: %s / %s",
+  "tooltip.offense_armer.slot_sieve": "Insert a carbon molecular sieve"
 }

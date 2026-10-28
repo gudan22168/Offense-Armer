@@ -31,5 +31,11 @@
   "message.offense_armer.linker_too_far": "距离超出可连接范围",
   "message.offense_armer.linker_not_device": "该方块不接受电力",
   "message.offense_armer.linker_linked": "已连接设备：%s, %s, %s",
-  "message.offense_armer.linker_already": "该设备已经连接过了"
+  "message.offense_armer.linker_already": "该设备已经连接过了",
+  "tooltip.offense_armer.linker_bound": "已绑定电站：%s, %s, %s",
+  "tooltip.offense_armer.linker_unbound": "未绑定电站（右键电站选择）",
+  "tooltip.offense_armer.bar_energy": "电量：%s / %s",
+  "tooltip.offense_armer.bar_air": "压缩空气：%s / %s",
+  "tooltip.offense_armer.bar_nitrogen": "氮气：%s / %s",
+  "tooltip.offense_armer.slot_sieve": "放入碳分子筛"
 }

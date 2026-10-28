@@ -1,5 +1,6 @@
 package com.cmcy.offense_armer;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -8,12 +9,15 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+
+import java.util.List;
 
 /**
  * 供电连接器：右键电站选中，Shift+右键范围内设备建立连接。
@@ -110,5 +114,17 @@ public class PowerLinkerItem extends Item {
         }
         CompoundTag tag = data.copyTag();
         return tag.contains(KEY_PLANT) ? BlockPos.of(tag.getLong(KEY_PLANT)) : null;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        BlockPos pos = getSelectedPlant(stack);
+        if (pos != null) {
+            tooltip.add(Component.translatable("tooltip.offense_armer.linker_bound",
+                    pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.AQUA));
+        } else {
+            tooltip.add(Component.translatable("tooltip.offense_armer.linker_unbound")
+                    .withStyle(ChatFormatting.GRAY));
+        }
     }
 }

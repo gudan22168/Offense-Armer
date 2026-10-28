@@ -53,4 +53,31 @@ public class NitrogenGeneratorScreen extends AbstractContainerScreen<NitrogenGen
         g.drawString(this.font, this.title, 8, 6, 0xFFCED5DD, false);
         g.drawString(this.font, this.playerInventoryTitle, 8, 82, 0xFF9AA3AD, false);
     }
+
+    @Override
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        super.render(g, mouseX, mouseY, partialTick);
+        // 物品提示（兜底，防止某些情况下不显示）
+        if (this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
+            var stack = this.hoveredSlot.getItem();
+            g.renderTooltip(this.font, this.getTooltipFromContainerItem(stack),
+                    stack.getTooltipImage(), stack, mouseX, mouseY);
+            return;
+        }
+        // 竖条数值提示
+        if (isHovering(49, 22, BAR_W, BAR_H, mouseX, mouseY)) {
+            g.renderTooltip(this.font, Component.translatable("tooltip.offense_armer.bar_energy",
+                    menu.getEnergy(), MAX), mouseX, mouseY);
+        } else if (isHovering(69, 22, BAR_W, BAR_H, mouseX, mouseY)) {
+            g.renderTooltip(this.font, Component.translatable("tooltip.offense_armer.bar_air",
+                    menu.getAir(), MAX), mouseX, mouseY);
+        } else if (isHovering(113, 22, BAR_W, BAR_H, mouseX, mouseY)) {
+            g.renderTooltip(this.font, Component.translatable("tooltip.offense_armer.bar_nitrogen",
+                    menu.getNitrogen(), MAX), mouseX, mouseY);
+        } else if (isHovering(89, 33, 18, 18, mouseX, mouseY)
+                && menu.slots.get(NitrogenGeneratorMenu.SLOT_SIEVE).getItem().isEmpty()) {
+            g.renderTooltip(this.font, Component.translatable("tooltip.offense_armer.slot_sieve"),
+                    mouseX, mouseY);
+        }
+    }
 }
