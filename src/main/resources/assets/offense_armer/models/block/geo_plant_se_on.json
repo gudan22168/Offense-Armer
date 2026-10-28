@@ -1,4 +1,8 @@
 {
+  "texture_size": [
+    96,
+    64
+  ],
   "textures": {
     "0": "offense_armer:block/geothermal_plant_atlas",
     "particle": "offense_armer:block/geothermal_plant_atlas"
