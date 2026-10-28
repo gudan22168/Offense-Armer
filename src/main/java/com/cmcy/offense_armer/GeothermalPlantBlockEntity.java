@@ -194,6 +194,11 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
 
     /** 随机采样若干列，每列从机器下方一直找到基岩层，挖掉第一块熔岩。 */
     private void scanAndExtract(Level level, BlockPos pos) {
+        // 储能已满：停止抽取，避免白白消耗送热棒
+        if (this.energy >= MAX_ENERGY) {
+            this.lastScanFound = -1;
+            return;
+        }
         int r = Config.geoRadius;
         int target = Config.geoLavaPerScan;
         int mined = 0;

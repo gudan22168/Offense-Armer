@@ -96,8 +96,9 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
         }
         g.drawString(font, "已抽取熔岩：" + menu.getLavaMined() + " 格", x, 62, C_TEXT, false);
         int scan = menu.getLastScanFound();
-        g.drawString(font, "最近扫描：" + (scan > 0 ? scan + " 块熔岩" : "未发现熔岩源"),
-                x, 72, scan > 0 ? C_TEXT : C_WARN, false);
+        String scanText = scan < 0 ? "储能已满，暂停抽取"
+                : scan > 0 ? scan + " 块熔岩" : "未发现熔岩源";
+        g.drawString(font, "最近扫描：" + scanText, x, 72, scan == 0 ? C_WARN : C_TEXT, false);
 
         List<ModNetwork.PlantLink> links = links();
         g.drawString(font, "连接设备 (" + links.size() + ")", x, 86, C_DIM, false);
@@ -138,7 +139,6 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
         boolean clearHover = mx >= x && mx < x + 70 && my >= 188 && my < 204;
         g.fill(x, 188, x + 70, 204, clearHover ? 0xFF8A3030 : 0xFF3A2028);
         g.drawString(font, "全部断开", x + 8, 192, 0xFFE0B0B0, false);
-        g.drawString(font, "X 解除单台", x + 80, 192, C_DIM, false);
     }
 
     @Override
@@ -147,8 +147,8 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
             List<ModNetwork.PlantLink> links = links();
             for (int i = 0; i < Math.min(links.size(), MAX_ROWS); i++) {
                 int by = ROW_Y + i * ROW_H + 2;
-                if (mx >= leftPos + 10 + 202 && mx < leftPos + 10 + 218
-                        && my >= topPos + by && my < topPos + by + 14) {
+                double bx = leftPos + 222;
+                if (mx >= bx && mx < bx + 16 && my >= topPos + by && my < topPos + by + 14) {
                     PacketDistributor.sendToServer(
                             new ModNetwork.RemoveLinkPayload(menu.getPlantPos(), links.get(i).pos()));
                     return true;

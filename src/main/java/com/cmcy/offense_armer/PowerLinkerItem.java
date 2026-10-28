@@ -58,7 +58,20 @@ public class PowerLinkerItem extends Item {
         return InteractionResult.PASS;
     }
 
-    private static void handleLink(Player player, ItemStack stack, BlockPos devicePos, Level level) {
+    /** 多方块机器（如制氮机）主方块不在点击位置时，解析到真正带方块实体/能量能力的那一格。 */
+    private static BlockPos resolveTarget(Level level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        if (state.getBlock() instanceof NitrogenGeneratorBlock
+                && state.hasProperty(NitrogenGeneratorBlock.PART)
+                && state.hasProperty(NitrogenGeneratorBlock.FACING)) {
+            return state.getValue(NitrogenGeneratorBlock.PART) == NitrogenGeneratorBlock.Part.RIGHT
+                    ? pos
+                    : pos.relative(state.getValue(NitrogenGeneratorBlock.FACING).getClockWise());
+        }
+        return pos;
+    }
+
+    private static void handleLink(Player player, ItemStack stack, BlockPos clickedPos, Level level) {
         BlockPos plantPos = getSelectedPlant(stack);
         if (plantPos == null) {
             player.displayClientMessage(Component.translatable("message.offense_armer.linker_no_plant"), true);
@@ -68,6 +81,7 @@ public class PowerLinkerItem extends Item {
             player.displayClientMessage(Component.translatable("message.offense_armer.linker_plant_gone"), true);
             return;
         }
+        BlockPos devicePos = resolveTarget(level, clickedPos);
         double range = Config.geoWirelessRadius;
         if (plantPos.distSqr(devicePos) > range * range) {
             player.displayClientMessage(Component.translatable("message.offense_armer.linker_too_far"), true);
