@@ -122,15 +122,23 @@ public class Config {
 
     public static final ModConfigSpec.IntValue GEO_RADIUS = BUILDER
             .comment("地热电站抽取熔岩的水平半径（格）。")
-            .defineInRange("geoRadius", 16, 1, 64);
+            .defineInRange("geoRadius", 32, 1, 64);
 
     public static final ModConfigSpec.IntValue GEO_LAVA_PER_SCAN = BUILDER
-            .comment("地热电站每 20 tick 最多抽取多少格熔岩（抽够就停）。")
-            .defineInRange("geoLavaPerScan", 8, 1, 64);
+            .comment("地热电站每次扫描最多抽取多少格熔岩（抽够就停）。")
+            .defineInRange("geoLavaPerScan", 4, 1, 64);
 
     public static final ModConfigSpec.IntValue GEO_ENERGY_PER_LAVA = BUILDER
-            .comment("每格熔岩产生的能量。")
-            .defineInRange("geoEnergyPerLava", 500, 1, 100000);
+            .comment("每格熔岩燃烧产生的总能量。")
+            .defineInRange("geoEnergyPerLava", 8000, 1, 1000000);
+
+    public static final ModConfigSpec.IntValue GEO_BURN_TICKS = BUILDER
+            .comment("每格熔岩燃烧多少 tick（20 tick = 1 秒）。越大越省岩浆、单格发电越久。")
+            .defineInRange("geoBurnTicksPerLava", 400, 1, 24000);
+
+    public static final ModConfigSpec.IntValue GEO_FUEL_THRESHOLD = BUILDER
+            .comment("燃料低于该 tick 数时才继续抽取熔岩，避免把岩浆抽空。")
+            .defineInRange("geoFuelThreshold", 600, 0, 24000);
 
     public static final ModConfigSpec.IntValue GEO_PUSH_PER_TICK = BUILDER
             .comment("地热电站每 tick 无线推送的最大能量。")
@@ -167,6 +175,8 @@ public class Config {
     public static int geoRadius;
     public static int geoLavaPerScan;
     public static int geoEnergyPerLava;
+    public static int geoBurnTicks;
+    public static int geoFuelThreshold;
     public static int geoPushPerTick;
     public static int geoWirelessRadius;
 
@@ -203,6 +213,8 @@ public class Config {
         geoRadius = GEO_RADIUS.get();
         geoLavaPerScan = GEO_LAVA_PER_SCAN.get();
         geoEnergyPerLava = GEO_ENERGY_PER_LAVA.get();
+        geoBurnTicks = GEO_BURN_TICKS.get();
+        geoFuelThreshold = GEO_FUEL_THRESHOLD.get();
         geoPushPerTick = GEO_PUSH_PER_TICK.get();
         geoWirelessRadius = GEO_WIRELESS_RADIUS.get();
         NitrogenCompat.reload();

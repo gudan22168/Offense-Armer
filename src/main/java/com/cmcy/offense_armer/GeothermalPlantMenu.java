@@ -18,7 +18,7 @@ public class GeothermalPlantMenu extends AbstractContainerMenu {
 
     // 客户端
     public GeothermalPlantMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buf) {
-        this(containerId, playerInventory, buf.readBlockPos(), new SimpleContainerData(5));
+        this(containerId, playerInventory, buf.readBlockPos(), new SimpleContainerData(6));
     }
 
     // 服务端
@@ -55,6 +55,10 @@ public class GeothermalPlantMenu extends AbstractContainerMenu {
 
     public int getLastScanFound() {
         return data.get(4);
+    }
+
+    public int getLavaFuel() {
+        return data.get(5);
     }
 
     @Override

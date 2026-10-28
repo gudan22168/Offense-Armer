@@ -94,9 +94,11 @@ public class GeothermalPlantScreen extends AbstractContainerScreen<GeothermalPla
         } else {
             g.drawString(font, "送热棒耐久：" + rod, x, 52, C_TEXT, false);
         }
-        g.drawString(font, "已抽取熔岩：" + menu.getLavaMined() + " 格", x, 62, C_TEXT, false);
+        g.drawString(font, "已抽取熔岩：" + menu.getLavaMined() + " 格   燃料：" + (menu.getLavaFuel() / 20) + " 秒",
+                x, 62, C_TEXT, false);
         int scan = menu.getLastScanFound();
-        String scanText = scan < 0 ? "储能已满，暂停抽取"
+        String scanText = scan == -1 ? "储能已满，暂停抽取"
+                : scan == -2 ? "燃料充足，暂不抽取"
                 : scan > 0 ? scan + " 块熔岩" : "未发现熔岩源";
         g.drawString(font, "最近扫描：" + scanText, x, 72, scan == 0 ? C_WARN : C_TEXT, false);
 

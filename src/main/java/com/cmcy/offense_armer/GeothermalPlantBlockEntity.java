@@ -35,6 +35,8 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
     private int energy = 0;
     private int lavaMined = 0;
     private int lastScanFound = 0;
+    /** 剩余燃料（tick）。每格熔岩注入 geoBurnTicks。 */
+    private int lavaFuel = 0;
     /** 扫描范围内的所有列偏移，按顺序循环扫描，保证深层也能覆盖到。 */
     private final List<int[]> columnOffsets = new ArrayList<>();
     private int offsetsRadius = -1;
@@ -83,7 +85,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
     private final ContainerData data = new ContainerData() {
         @Override
         public int getCount() {
-            return 5;
+            return 6;
         }
 
         @Override
@@ -97,6 +99,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
                     yield rod.isEmpty() ? -1 : rod.getMaxDamage() - rod.getDamageValue();
                 }
                 case 4 -> lastScanFound;
+                case 5 -> lavaFuel;
                 default -> 0;
             };
         }
@@ -172,7 +175,15 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
         if (be.getBlockState().getValue(GeothermalPlantBlock.HAS_ROD) != hasRod) {
             GeothermalPlantBlock.setRodState(level, pos, hasRod);
         }
-        if (hasRod && level.getGameTime() % 20 == 0) {
+        // 燃烧燃料发电：储能满时暂停，避免浪费燃料
+        if (be.lavaFuel > 0 && be.energy < MAX_ENERGY) {
+            int perTick = Math.max(1, Config.geoEnergyPerLava / Math.max(1, Config.geoBurnTicks));
+            be.lavaFuel--;
+            be.energy = Math.min(MAX_ENERGY, be.energy + perTick);
+            be.setChanged();
+        }
+        // 燃料不足时才去抽新的熔岩，避免把岩浆抽空
+        if (hasRod && be.lavaFuel < Config.geoFuelThreshold && level.getGameTime() % 20 == 0) {
             be.scanAndExtract(level, pos);
         }
         // 按连接列表定向供电
@@ -200,6 +211,11 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
         // 储能已满：停止抽取，避免白白消耗送热棒
         if (this.energy >= MAX_ENERGY) {
             this.lastScanFound = -1;
+            return;
+        }
+        // 燃料充足：暂不抽取
+        if (this.lavaFuel >= Config.geoFuelThreshold) {
+            this.lastScanFound = -2;
             return;
         }
         int r = Config.geoRadius;
@@ -236,7 +252,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
                 // 只抽源头岩浆（LEVEL == 0）；流动岩浆不算，避免一小片无限抽
                 if (lava.is(Blocks.LAVA) && lava.getValue(LiquidBlock.LEVEL) == 0) {
                     level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
-                    this.energy = Math.min(MAX_ENERGY, this.energy + Config.geoEnergyPerLava);
+                    this.lavaFuel += Config.geoBurnTicks;
                     mined++;
                     this.lavaMined++;
                     damageRod(level);
@@ -280,6 +296,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
         super.saveAdditional(tag, provider);
         tag.putInt("Energy", energy);
         tag.putInt("LavaMined", lavaMined);
+        tag.putInt("LavaFuel", lavaFuel);
         tag.putLongArray("Links", links.stream().mapToLong(BlockPos::asLong).toArray());
         ContainerHelper.saveAllItems(tag, inventory.getItems(), provider);
     }
@@ -291,6 +308,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
             energy = tag.getInt("Energy");
         }
         lavaMined = tag.getInt("LavaMined");
+        lavaFuel = tag.getInt("LavaFuel");
         links.clear();
         for (long l : tag.getLongArray("Links")) {
             links.add(BlockPos.of(l));
