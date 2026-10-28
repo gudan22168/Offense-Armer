@@ -134,8 +134,7 @@ public class ModNetwork {
     public static void syncPlantLinks(ServerPlayer player, GeothermalPlantBlockEntity be) {
         List<PlantLink> list = new ArrayList<>();
         for (BlockPos p : be.getLinks()) {
-            var storage = be.getLevel() == null ? null
-                    : be.getLevel().getCapability(net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.BLOCK, p, null);
+            var storage = be.getLevel() == null ? null : EnergyHelper.findAny(be.getLevel(), p);
             list.add(new PlantLink(p,
                     storage == null ? -1 : storage.getEnergyStored(),
                     storage == null ? -1 : storage.getMaxEnergyStored()));
