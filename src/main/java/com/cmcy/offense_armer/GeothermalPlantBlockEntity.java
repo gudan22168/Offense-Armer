@@ -176,11 +176,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
                 if (be.energy <= 0) {
                     break;
                 }
-                IEnergyStorage storage = EnergyHelper.findReceiver(level, target);
-                if (storage == null) {
-                    continue;
-                }
-                int accepted = storage.receiveEnergy(Math.min(be.energy, perLink), false);
+                int accepted = EnergyHelper.push(level, target, Math.min(be.energy, perLink));
                 if (accepted > 0) {
                     be.energy -= accepted;
                     dirty = true;

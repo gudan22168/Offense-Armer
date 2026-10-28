@@ -47,4 +47,33 @@ public final class EnergyHelper {
         }
         return null;
     }
+
+    /**
+     * 把能量推给目标：先试无方向，再逐个方向试，累加实际接收量。
+     * 不依赖 canReceive()，因为部分模组（Mekanism 等）的实现与面配置不完全一致。
+     *
+     * @return 实际被接收的能量
+     */
+    public static int push(Level level, BlockPos pos, int amount) {
+        if (amount <= 0) {
+            return 0;
+        }
+        int accepted = 0;
+        IEnergyStorage s = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, null);
+        if (s != null) {
+            accepted += s.receiveEnergy(amount, false);
+        }
+        if (accepted < amount) {
+            for (Direction d : Direction.values()) {
+                s = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, d);
+                if (s != null) {
+                    accepted += s.receiveEnergy(amount - accepted, false);
+                    if (accepted >= amount) {
+                        break;
+                    }
+                }
+            }
+        }
+        return Math.min(accepted, amount);
+    }
 }

@@ -91,7 +91,7 @@ public class PowerLinkerItem extends Item {
             player.displayClientMessage(Component.translatable("message.offense_armer.linker_too_far"), true);
             return;
         }
-        IEnergyStorage storage = EnergyHelper.findReceiver(level, devicePos);
+        IEnergyStorage storage = EnergyHelper.findAny(level, devicePos);
         if (storage == null) {
             player.displayClientMessage(Component.translatable("message.offense_armer.linker_not_device"), true);
             return;
