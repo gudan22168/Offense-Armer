@@ -15,8 +15,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -209,22 +212,37 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
             BlockPos column = pos.offset(dx, 0, dz);
             for (int y = pos.getY() - 1; y >= level.getMinBuildHeight(); y--) {
                 BlockPos p = new BlockPos(column.getX(), y, column.getZ());
-                if (level.getBlockState(p).is(Blocks.LAVA)) {
+                BlockState lava = level.getBlockState(p);
+                // 只抽源头岩浆（LEVEL == 0）；流动岩浆不算，避免一小片无限抽
+                if (lava.is(Blocks.LAVA) && lava.getValue(LiquidBlock.LEVEL) == 0) {
                     level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
                     this.energy = Math.min(MAX_ENERGY, this.energy + Config.geoEnergyPerLava);
                     mined++;
                     this.lavaMined++;
-                    ItemStack rod = this.inventory.getItem(0);
-                    rod.setDamageValue(rod.getDamageValue() + 1);
-                    if (rod.getDamageValue() >= rod.getMaxDamage()) {
-                        this.inventory.setItem(0, ItemStack.EMPTY);
-                    }
+                    damageRod(level);
                     this.setChanged();
                     break;
                 }
             }
         }
         this.lastScanFound = mined;
+    }
+
+    /** 消耗送热棒耐久；耐久附魔按原版概率（每级 1/(等级+1) 概率不消耗）。 */
+    private void damageRod(Level level) {
+        ItemStack rod = this.inventory.getItem(0);
+        if (rod.isEmpty()) {
+            return;
+        }
+        int unbreaking = EnchantmentHelper.getItemEnchantmentLevel(
+                level.registryAccess().holderOrThrow(Enchantments.UNBREAKING), rod);
+        if (unbreaking > 0 && level.random.nextInt(unbreaking + 1) > 0) {
+            return;
+        }
+        rod.setDamageValue(rod.getDamageValue() + 1);
+        if (rod.getDamageValue() >= rod.getMaxDamage()) {
+            this.inventory.setItem(0, ItemStack.EMPTY);
+        }
     }
 
     public boolean tryInsertRod(ItemStack stack) {
