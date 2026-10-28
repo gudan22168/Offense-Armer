@@ -35,6 +35,10 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
     private int energy = 0;
     private int lavaMined = 0;
     private int lastScanFound = 0;
+    /** 扫描范围内的所有列偏移，按顺序循环扫描，保证深层也能覆盖到。 */
+    private final List<int[]> columnOffsets = new ArrayList<>();
+    private int offsetsRadius = -1;
+    private int scanCursor = 0;
     private final SimpleContainer inventory = new SimpleContainer(1);
     /** 已连接的用电设备坐标。 */
     private final List<BlockPos> links = new ArrayList<>();
@@ -199,17 +203,33 @@ public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvi
             return;
         }
         int r = Config.geoRadius;
+        // 预计算圆形范围内的所有列，之后按游标顺序循环扫描（避免随机采样漏掉深处的岩浆）
+        if (columnOffsets.isEmpty() || offsetsRadius != r) {
+            columnOffsets.clear();
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    if (dx * dx + dz * dz <= r * r) {
+                        columnOffsets.add(new int[]{dx, dz});
+                    }
+                }
+            }
+            offsetsRadius = r;
+            scanCursor = 0;
+        }
+        int total = columnOffsets.size();
+        if (total == 0) {
+            this.lastScanFound = 0;
+            return;
+        }
         int target = Config.geoLavaPerScan;
         int mined = 0;
-        int attempts = 0;
-        while (mined < target && attempts < 160) {
-            attempts++;
-            int dx = level.random.nextInt(r * 2 + 1) - r;
-            int dz = level.random.nextInt(r * 2 + 1) - r;
-            if (dx * dx + dz * dz > r * r) {
-                continue;
-            }
-            BlockPos column = pos.offset(dx, 0, dz);
+        int scanned = 0;
+        int budget = Math.min(160, total);
+        while (mined < target && scanned < budget) {
+            int[] o = columnOffsets.get(scanCursor);
+            scanCursor = (scanCursor + 1) % total;
+            scanned++;
+            BlockPos column = pos.offset(o[0], 0, o[1]);
             for (int y = pos.getY() - 1; y >= level.getMinBuildHeight(); y--) {
                 BlockPos p = new BlockPos(column.getX(), y, column.getZ());
                 BlockState lava = level.getBlockState(p);
