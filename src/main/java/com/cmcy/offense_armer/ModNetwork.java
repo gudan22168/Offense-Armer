@@ -1,5 +1,9 @@
 package com.cmcy.offense_armer;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,6 +28,10 @@ public class ModNetwork {
             registrar.playToClient(SyncAbilityPayload.TYPE, SyncAbilityPayload.STREAM_CODEC, SyncAbilityPayload::handle);
             registrar.playToServer(ToggleAbilityPayload.TYPE, ToggleAbilityPayload.STREAM_CODEC, ToggleAbilityPayload::handle);
             registrar.playToServer(SetBurstPayload.TYPE, SetBurstPayload.STREAM_CODEC, SetBurstPayload::handle);
+            registrar.playToClient(PlantLinksPayload.TYPE, PlantLinksPayload.STREAM_CODEC, PlantLinksPayload::handle);
+            registrar.playToServer(RemoveLinkPayload.TYPE, RemoveLinkPayload.STREAM_CODEC, RemoveLinkPayload::handle);
+            registrar.playToServer(ClearLinksPayload.TYPE, ClearLinksPayload.STREAM_CODEC, ClearLinksPayload::handle);
+            registrar.playToServer(RequestLinksPayload.TYPE, RequestLinksPayload.STREAM_CODEC, RequestLinksPayload::handle);
         }
     }
 
@@ -112,6 +120,132 @@ public class ModNetwork {
                         ability.setActive(true);
                     }
                     syncToClient(player, ability);
+                }
+            });
+        }
+    }
+
+    // ---------------- 电站连接 ----------------
+
+    public record PlantLink(BlockPos pos, int energy, int max) {
+    }
+
+    /** 把电站的连接列表与实时电量发给客户端界面。 */
+    public static void syncPlantLinks(ServerPlayer player, GeothermalPlantBlockEntity be) {
+        List<PlantLink> list = new ArrayList<>();
+        for (BlockPos p : be.getLinks()) {
+            var storage = be.getLevel() == null ? null
+                    : be.getLevel().getCapability(net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.BLOCK, p, null);
+            list.add(new PlantLink(p,
+                    storage == null ? -1 : storage.getEnergyStored(),
+                    storage == null ? -1 : storage.getMaxEnergyStored()));
+        }
+        PacketDistributor.sendToPlayer(player, new PlantLinksPayload(be.getBlockPos(), list));
+    }
+
+    public record PlantLinksPayload(BlockPos plant, List<PlantLink> links) implements CustomPacketPayload {
+        public static final Type<PlantLinksPayload> TYPE =
+                new Type<>(ResourceLocation.fromNamespaceAndPath(Offense_armer.MODID, "plant_links"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, PlantLinksPayload> STREAM_CODEC = StreamCodec.of(
+                (buf, payload) -> {
+                    buf.writeBlockPos(payload.plant());
+                    buf.writeVarInt(payload.links().size());
+                    for (PlantLink l : payload.links()) {
+                        buf.writeBlockPos(l.pos());
+                        buf.writeVarInt(Math.max(-1, l.energy()));
+                        buf.writeVarInt(Math.max(-1, l.max()));
+                    }
+                },
+                buf -> {
+                    BlockPos plant = buf.readBlockPos();
+                    int n = buf.readVarInt();
+                    List<PlantLink> list = new ArrayList<>(n);
+                    for (int i = 0; i < n; i++) {
+                        list.add(new PlantLink(buf.readBlockPos(), buf.readVarInt(), buf.readVarInt()));
+                    }
+                    return new PlantLinksPayload(plant, list);
+                }
+        );
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+
+        public static void handle(PlantLinksPayload payload, IPayloadContext context) {
+            context.enqueueWork(() -> ClientPlantLinks.set(payload.plant(), payload.links()));
+        }
+    }
+
+    public record RemoveLinkPayload(BlockPos plant, BlockPos device) implements CustomPacketPayload {
+        public static final Type<RemoveLinkPayload> TYPE =
+                new Type<>(ResourceLocation.fromNamespaceAndPath(Offense_armer.MODID, "remove_link"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, RemoveLinkPayload> STREAM_CODEC = StreamCodec.of(
+                (buf, payload) -> {
+                    buf.writeBlockPos(payload.plant());
+                    buf.writeBlockPos(payload.device());
+                },
+                buf -> new RemoveLinkPayload(buf.readBlockPos(), buf.readBlockPos())
+        );
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+
+        public static void handle(RemoveLinkPayload payload, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                if (context.player() instanceof ServerPlayer sp
+                        && sp.level().getBlockEntity(payload.plant()) instanceof GeothermalPlantBlockEntity be) {
+                    be.removeLink(payload.device());
+                    syncPlantLinks(sp, be);
+                }
+            });
+        }
+    }
+
+    public record RequestLinksPayload(BlockPos plant) implements CustomPacketPayload {
+        public static final Type<RequestLinksPayload> TYPE =
+                new Type<>(ResourceLocation.fromNamespaceAndPath(Offense_armer.MODID, "request_links"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, RequestLinksPayload> STREAM_CODEC = StreamCodec.of(
+                (buf, payload) -> buf.writeBlockPos(payload.plant()),
+                buf -> new RequestLinksPayload(buf.readBlockPos())
+        );
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+
+        public static void handle(RequestLinksPayload payload, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                if (context.player() instanceof ServerPlayer sp
+                        && sp.level().getBlockEntity(payload.plant()) instanceof GeothermalPlantBlockEntity be) {
+                    syncPlantLinks(sp, be);
+                }
+            });
+        }
+    }
+
+    public record ClearLinksPayload(BlockPos plant) implements CustomPacketPayload {
+        public static final Type<ClearLinksPayload> TYPE =
+                new Type<>(ResourceLocation.fromNamespaceAndPath(Offense_armer.MODID, "clear_links"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, ClearLinksPayload> STREAM_CODEC = StreamCodec.of(
+                (buf, payload) -> buf.writeBlockPos(payload.plant()),
+                buf -> new ClearLinksPayload(buf.readBlockPos())
+        );
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+
+        public static void handle(ClearLinksPayload payload, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                if (context.player() instanceof ServerPlayer sp
+                        && sp.level().getBlockEntity(payload.plant()) instanceof GeothermalPlantBlockEntity be) {
+                    be.clearLinks();
+                    syncPlantLinks(sp, be);
                 }
             });
         }

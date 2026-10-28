@@ -45,6 +45,7 @@ public class ClientSetup {
     @SubscribeEvent
     public static void registerMenuScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.NITROGEN_GENERATOR.get(), NitrogenGeneratorScreen::new);
+        event.register(ModMenus.GEOTHERMAL_PLANT.get(), GeothermalPlantScreen::new);
     }
 
     @SubscribeEvent

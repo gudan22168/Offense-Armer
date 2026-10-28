@@ -9,6 +9,7 @@
   "item.offense_armer.carbon_sieve": "碳分子筛",
   "block.offense_armer.nitrogen_generator": "制氮机",
   "item.offense_armer.heat_rod": "送热棒",
+  "item.offense_armer.power_linker": "供电连接器",
   "block.offense_armer.geothermal_plant": "地热实验电站",
   "key.offense_armer.toggle_ability": "切换氮气装甲",
   "key.offense_armer.burst": "氮气爆冲",
@@ -23,5 +24,12 @@
   "message.offense_armer.not_developed": "你的能力尚未觉醒。",
   "message.offense_armer.no_nitrogen": "氮气不足。",
   "message.offense_armer.overloaded": "你已过载，正在恢复氮气…",
-  "message.offense_armer.geo_occupied": "该区块已有地热实验电站。"
+  "message.offense_armer.geo_occupied": "该区块已有地热实验电站。",
+  "message.offense_armer.linker_selected": "已选择电站：%s, %s, %s",
+  "message.offense_armer.linker_no_plant": "请先用连接器右键电站",
+  "message.offense_armer.linker_plant_gone": "目标电站已不存在",
+  "message.offense_armer.linker_too_far": "距离超出可连接范围",
+  "message.offense_armer.linker_not_device": "该方块不接受电力",
+  "message.offense_armer.linker_linked": "已连接设备：%s, %s, %s",
+  "message.offense_armer.linker_already": "该设备已经连接过了"
 }

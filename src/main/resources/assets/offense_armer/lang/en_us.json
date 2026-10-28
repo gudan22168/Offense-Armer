@@ -9,6 +9,7 @@
   "item.offense_armer.carbon_sieve": "Carbon Molecular Sieve",
   "block.offense_armer.nitrogen_generator": "Nitrogen Generator",
   "item.offense_armer.heat_rod": "Heat Transfer Rod",
+  "item.offense_armer.power_linker": "Power Linker",
   "block.offense_armer.geothermal_plant": "Geothermal Experimental Plant",
   "key.offense_armer.toggle_ability": "Toggle Nitrogen Armor",
   "key.offense_armer.burst": "Nitrogen Burst",
@@ -23,5 +24,12 @@
   "message.offense_armer.not_developed": "Your ability has not awakened yet.",
   "message.offense_armer.no_nitrogen": "Not enough nitrogen.",
   "message.offense_armer.overloaded": "Overloaded, recovering nitrogen...",
-  "message.offense_armer.geo_occupied": "A geothermal plant already exists in this chunk."
+  "message.offense_armer.geo_occupied": "A geothermal plant already exists in this chunk.",
+  "message.offense_armer.linker_selected": "Plant selected: %s, %s, %s",
+  "message.offense_armer.linker_no_plant": "Right-click a plant with the linker first",
+  "message.offense_armer.linker_plant_gone": "The selected plant no longer exists",
+  "message.offense_armer.linker_too_far": "Out of connection range",
+  "message.offense_armer.linker_not_device": "This block does not accept power",
+  "message.offense_armer.linker_linked": "Linked device: %s, %s, %s",
+  "message.offense_armer.linker_already": "This device is already linked"
 }

@@ -12,4 +12,7 @@ public class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<NitrogenGeneratorMenu>> NITROGEN_GENERATOR =
             MENUS.register("nitrogen_generator", () -> IMenuTypeExtension.create(NitrogenGeneratorMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<GeothermalPlantMenu>> GEOTHERMAL_PLANT =
+            MENUS.register("geothermal_plant", () -> IMenuTypeExtension.create(GeothermalPlantMenu::new));
 }

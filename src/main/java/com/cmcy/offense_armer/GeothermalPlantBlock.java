@@ -133,8 +133,30 @@ public class GeothermalPlantBlock extends Block implements EntityBlock {
             if (level.getBlockEntity(master) instanceof GeothermalPlantBlockEntity be && be.tryInsertRod(stack)) {
                 return ItemInteractionResult.sidedSuccess(level.isClientSide());
             }
+            return ItemInteractionResult.sidedSuccess(level.isClientSide());
         }
-        return super.useItemOn(stack, state, level, pos, player, hand, hit);
+        if (stack.getItem() instanceof PowerLinkerItem) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+        openPlantMenu(level, pos, state, player);
+        return ItemInteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               Player player, BlockHitResult hit) {
+        openPlantMenu(level, pos, state, player);
+        return InteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    private static void openPlantMenu(Level level, BlockPos pos, BlockState state, Player player) {
+        if (level.isClientSide()) {
+            return;
+        }
+        BlockPos master = getMasterPos(pos, state);
+        if (level.getBlockEntity(master) instanceof GeothermalPlantBlockEntity be) {
+            player.openMenu(be);
+        }
     }
 
     @Nullable

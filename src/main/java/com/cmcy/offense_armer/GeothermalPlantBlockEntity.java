@@ -1,27 +1,39 @@
 package com.cmcy.offense_armer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * 地热实验电站方块实体：插入送热棒后，向下抽取熔岩转为电能，无线推送给附近机器。
+ * 地热实验电站方块实体：插入送热棒后向下抽取熔岩发电，按连接列表定向供电。
  */
-public class GeothermalPlantBlockEntity extends BlockEntity {
+public class GeothermalPlantBlockEntity extends BlockEntity implements MenuProvider {
     public static final int MAX_ENERGY = 100_000;
 
     private int energy = 0;
     private final SimpleContainer inventory = new SimpleContainer(1);
+    /** 已连接的用电设备坐标。 */
+    private final List<BlockPos> links = new ArrayList<>();
 
-    /** 能量输出能力（无线推送和目标机器都通过它取电）。 */
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
         @Override
         public int receiveEnergy(int toReceive, boolean simulate) {
@@ -59,6 +71,26 @@ public class GeothermalPlantBlockEntity extends BlockEntity {
         }
     };
 
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> energy;
+                case 1 -> links.size();
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+        }
+    };
+
     public GeothermalPlantBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.GEOTHERMAL_PLANT_BE.get(), pos, state);
     }
@@ -67,8 +99,54 @@ public class GeothermalPlantBlockEntity extends BlockEntity {
         return energyStorage;
     }
 
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.offense_armer.geothermal_plant");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+            ModNetwork.syncPlantLinks(sp, this);
+        }
+        return new GeothermalPlantMenu(containerId, playerInventory, this);
+    }
+
     public SimpleContainer getInventory() {
         return inventory;
+    }
+
+    public ContainerData getData() {
+        return data;
+    }
+
+    public List<BlockPos> getLinks() {
+        return links;
+    }
+
+    public boolean addLink(BlockPos pos) {
+        if (links.contains(pos)) {
+            return false;
+        }
+        links.add(pos.immutable());
+        setChanged();
+        return true;
+    }
+
+    public boolean removeLink(BlockPos pos) {
+        boolean removed = links.remove(pos);
+        if (removed) {
+            setChanged();
+        }
+        return removed;
+    }
+
+    public void clearLinks() {
+        if (!links.isEmpty()) {
+            links.clear();
+            setChanged();
+        }
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, GeothermalPlantBlockEntity be) {
@@ -76,18 +154,31 @@ public class GeothermalPlantBlockEntity extends BlockEntity {
             return;
         }
         boolean hasRod = !be.inventory.getItem(0).isEmpty();
-        // 与方块状态同步（棒坏掉/插入），四格一起切换
         if (be.getBlockState().getValue(GeothermalPlantBlock.HAS_ROD) != hasRod) {
             GeothermalPlantBlock.setRodState(level, pos, hasRod);
         }
         if (hasRod && level.getGameTime() % 20 == 0) {
             be.scanAndExtract(level, pos);
         }
-        if (be.energy > 0) {
-            int pushed = WirelessEnergy.push(level, pos, Config.geoWirelessRadius,
-                    Math.min(be.energy, Config.geoPushPerTick), be);
-            if (pushed > 0) {
-                be.energy -= pushed;
+        // 按连接列表定向供电
+        if (be.energy > 0 && !be.links.isEmpty()) {
+            int perLink = Math.max(1, Config.geoPushPerTick / be.links.size());
+            boolean dirty = false;
+            for (BlockPos target : be.links) {
+                if (be.energy <= 0) {
+                    break;
+                }
+                IEnergyStorage storage = level.getCapability(Capabilities.EnergyStorage.BLOCK, target, null);
+                if (storage == null || !storage.canReceive()) {
+                    continue;
+                }
+                int accepted = storage.receiveEnergy(Math.min(be.energy, perLink), false);
+                if (accepted > 0) {
+                    be.energy -= accepted;
+                    dirty = true;
+                }
+            }
+            if (dirty) {
                 be.setChanged();
             }
         }
@@ -113,7 +204,6 @@ public class GeothermalPlantBlockEntity extends BlockEntity {
                     level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
                     this.energy = Math.min(MAX_ENERGY, this.energy + Config.geoEnergyPerLava);
                     mined++;
-                    // 送热棒损耗
                     ItemStack rod = this.inventory.getItem(0);
                     rod.setDamageValue(rod.getDamageValue() + 1);
                     if (rod.getDamageValue() >= rod.getMaxDamage()) {
@@ -140,6 +230,7 @@ public class GeothermalPlantBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
         tag.putInt("Energy", energy);
+        tag.putLongArray("Links", links.stream().mapToLong(BlockPos::asLong).toArray());
         ContainerHelper.saveAllItems(tag, inventory.getItems(), provider);
     }
 
@@ -148,6 +239,10 @@ public class GeothermalPlantBlockEntity extends BlockEntity {
         super.loadAdditional(tag, provider);
         if (tag.contains("Energy")) {
             energy = tag.getInt("Energy");
+        }
+        links.clear();
+        for (long l : tag.getLongArray("Links")) {
+            links.add(BlockPos.of(l));
         }
         ContainerHelper.loadAllItems(tag, inventory.getItems(), provider);
     }
